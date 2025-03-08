@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Generated;
 import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class User extends BasicEntity {
     @Length(max = 50)
     @NotNull

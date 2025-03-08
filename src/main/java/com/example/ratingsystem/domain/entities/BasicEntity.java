@@ -16,17 +16,17 @@ import java.util.UUID;
 public class BasicEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    protected UUID id;
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)
     @Generated
     @ColumnDefault("NOW()")
     @Column(updatable = false)
     @NotNull
-    private OffsetDateTime createdAt;
+    protected OffsetDateTime createdAt;
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)
     @Generated
     @ColumnDefault("NOW()")
     @Column(updatable = false)
     @NotNull
-    private OffsetDateTime updatedAt;
+    protected OffsetDateTime updatedAt;
 }

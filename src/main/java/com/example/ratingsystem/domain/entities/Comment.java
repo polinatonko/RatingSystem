@@ -6,12 +6,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Generated;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "comments")
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Comment extends BasicEntity {
     @Min(1)
     @Max(5)
