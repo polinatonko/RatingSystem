@@ -10,6 +10,7 @@ import lombok.Generated;
 import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Entity
@@ -47,4 +48,14 @@ public class User extends BasicEntity {
     @OneToMany(mappedBy = "user")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<GameObject> objects;
+
+    public User(String firstName, String lastName, String password, String email, UserRole role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.createdAt = OffsetDateTime.now();
+        this.updatedAt = this.createdAt;
+    }
 }

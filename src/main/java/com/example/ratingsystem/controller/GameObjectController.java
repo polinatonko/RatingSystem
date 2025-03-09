@@ -8,7 +8,9 @@ import com.example.ratingsystem.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -22,20 +24,22 @@ public class GameObjectController {
     private final Mapper mapper;
 
     @PostMapping
-    public ResponseEntity<GameObject> createGameObject(@RequestBody GameObjectCreateDto dto) {
+    public ResponseEntity<GameObject> createGameObject(@RequestBody @Validated GameObjectCreateDto dto) {
         var object = gameObjectService.create(mapper.fromDto(dto));
-        return ResponseEntity.created(URI.create(String.format("/objects/%s", object.getId())))
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(object.getId()).toUri())
                 .body(object);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GameObject> update(@PathVariable UUID id, @RequestBody GameObjectUpdateDto dto) {
+    public ResponseEntity<GameObject> update(@PathVariable UUID id, @RequestBody @Validated GameObjectUpdateDto dto) {
         var object = gameObjectService.update(mapper.fromDto(id, dto));
         return ResponseEntity.ok(object);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         gameObjectService.delete(id);
     }

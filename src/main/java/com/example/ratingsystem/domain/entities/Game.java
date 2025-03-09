@@ -33,7 +33,7 @@ public class Game extends BasicEntity {
         this.title = title;
         this.text = text;
         createdAt = OffsetDateTime.now();
-        updatedAt = OffsetDateTime.now();
+        updatedAt = createdAt;
     }
 
     public Game(UUID id, String title, String text, OffsetDateTime createdAt) {

@@ -13,6 +13,10 @@ import java.util.UUID;
 public class UserService {
     private UserRepository userRepository;
 
+    public User create(User user) {
+        return userRepository.save(user);
+    }
+
     public Optional<User> get(UUID id) {
         return userRepository.findById(id);
     }

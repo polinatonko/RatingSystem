@@ -10,6 +10,7 @@ import com.example.ratingsystem.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,23 +26,23 @@ public class GameController {
     private final Mapper mapper;
 
     @PostMapping
-    public ResponseEntity<Game> create(@RequestBody GameCreateDto dto) {
+    public ResponseEntity<Game> create(@RequestBody @Validated GameCreateDto dto) {
         var game = gameService.create(mapper.fromDto(dto));
         return ResponseEntity
                 .created(ServletUriComponentsBuilder.fromCurrentRequest()
-                        .path(String.format("/{%s}", game.getId()))
+                        .path("/{id}")
                         .buildAndExpand(game.getId()).toUri())
                 .body(game);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Game> update(@PathVariable UUID id, @RequestBody GameUpdateDto dto) {
+    public ResponseEntity<Game> update(@PathVariable UUID id, @RequestBody @Validated GameUpdateDto dto) {
         var game = gameService.update(mapper.fromDto(id, dto));
         return ResponseEntity.ok(game);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         gameService.delete(id);
     }
