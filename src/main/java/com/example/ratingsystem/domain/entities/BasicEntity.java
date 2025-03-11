@@ -1,32 +1,19 @@
 package com.example.ratingsystem.domain.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Generated;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.TimeZoneStorage;
-import org.hibernate.annotations.TimeZoneStorageType;
+import org.hibernate.annotations.*;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @MappedSuperclass
 @Data
 public class BasicEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    protected UUID id;
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)
-    @Generated
-    @ColumnDefault("NOW()")
+    @CreationTimestamp
     @Column(updatable = false)
-    @NotNull
     protected OffsetDateTime createdAt;
+    @UpdateTimestamp
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)
-    @Generated
-    @ColumnDefault("NOW()")
-    @Column(updatable = false)
-    @NotNull
     protected OffsetDateTime updatedAt;
 }

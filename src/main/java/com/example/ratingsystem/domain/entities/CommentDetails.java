@@ -1,31 +1,26 @@
 package com.example.ratingsystem.domain.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "game_objects")
+@Table(name = "comment_details")
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class GameObject extends BasicEntity {
+public class CommentDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Length(max = 100)
+    @Min(1)
+    @Max(5)
     @NotNull
-    private String title;
+    private int rating;
     @Column(columnDefinition = "TEXT")
-    private String text;
-
-    @ManyToOne(optional = false)
-    private User user;
-    @ManyToOne
-    private Game game;
+    private String message;
 }

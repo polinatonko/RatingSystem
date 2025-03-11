@@ -1,9 +1,6 @@
-package com.example.ratingsystem.domain.service;
+package com.example.ratingsystem.service;
 
-import com.example.ratingsystem.domain.dtos.comment.CommentStatusDto;
 import com.example.ratingsystem.domain.entities.Comment;
-import com.example.ratingsystem.domain.enums.CommentStatus;
-import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,12 +32,5 @@ public class CommentService {
 
     public List<Comment> getBySellerId(UUID sellerId) {
         return commentRepository.findBySellerId(sellerId);
-    }
-
-    public Comment changeStatus(UUID id, CommentStatus status) {
-        var comment = commentRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
-        comment.setStatus(status);
-        return commentRepository.save(comment);
     }
 }

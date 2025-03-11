@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
 
-import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,6 +18,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Game extends BasicEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Length(max = 100)
     @NotNull
     private String title;
@@ -28,19 +30,4 @@ public class Game extends BasicEntity {
     @OneToMany(mappedBy = "game")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<GameObject> objects;
-
-    public Game(String title, String text) {
-        this.title = title;
-        this.text = text;
-        createdAt = OffsetDateTime.now();
-        updatedAt = createdAt;
-    }
-
-    public Game(UUID id, String title, String text, OffsetDateTime createdAt) {
-        this.id = id;
-        this.title = title;
-        this.text = text;
-        this.createdAt = createdAt;
-        this.updatedAt = OffsetDateTime.now();
-    }
 }

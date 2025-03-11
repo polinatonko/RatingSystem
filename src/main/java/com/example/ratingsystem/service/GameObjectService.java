@@ -1,4 +1,4 @@
-package com.example.ratingsystem.domain.service;
+package com.example.ratingsystem.service;
 
 import com.example.ratingsystem.domain.entities.GameObject;
 import com.example.ratingsystem.repository.GameObjectRepository;
@@ -27,7 +27,7 @@ public class GameObjectService {
     }
 
     public Optional<GameObject> get(UUID id) {
-        return gameObjectRepository.findById(id);
+        return id == null ? Optional.empty() : gameObjectRepository.findById(id);
     }
 
     public List<GameObject> getByGameId(UUID id) {

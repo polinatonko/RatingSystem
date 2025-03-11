@@ -1,26 +1,44 @@
-CREATE TYPE user_role AS ENUM('ADMIN', 'SELLER');
+CREATE TYPE user_role AS ENUM('ROLE_ADMIN', 'ROLE_SELLER');
 
-CREATE TABLE users (
+CREATE TABLE user_details (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     password VARCHAR(60) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    role user_role NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    role user_role NOT NULL
+);
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY REFERENCES user_details (id) ON DELETE CASCADE,
     is_enabled BOOL NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP(6) WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP(6) WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
-CREATE TYPE comment_status AS ENUM('APPROVED', 'REJECTED', 'WAITING');
+CREATE TABLE comment_details (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    rating INTEGER NOT NULL CHECK (rating > 0 AND rating < 6),
+    message TEXT
+);
 
 CREATE TABLE comments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY REFERENCES comment_details ON DELETE CASCADE,
     seller_id UUID REFERENCES users (id) ON DELETE CASCADE NOT NULL,
     author_id UUID REFERENCES users (id) ON DELETE SET NULL,
-    rating INTEGER NOT NULL CHECK (rating > 0 AND rating < 6),
-    message TEXT,
-    status comment_status NOT NULL DEFAULT 'WAITING',
+    created_at TIMESTAMP(6) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP(6) WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TYPE request_status AS ENUM('APPROVED', 'REJECTED', 'WAITING');
+
+CREATE TABLE submit_requests (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    comment_details_id UUID REFERENCES comment_details ON DELETE SET NULL UNIQUE,
+    user_details_id UUID REFERENCES user_details ON DELETE SET NULL UNIQUE,
+    seller_id UUID REFERENCES users ON DELETE CASCADE,
+    author_id UUID REFERENCES users ON DELETE CASCADE,
+    status request_status NOT NULL DEFAULT 'WAITING',
     created_at TIMESTAMP(6) WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP(6) WITH TIME ZONE NOT NULL DEFAULT NOW()
 );

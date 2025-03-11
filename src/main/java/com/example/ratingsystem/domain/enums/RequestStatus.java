@@ -1,6 +1,6 @@
 package com.example.ratingsystem.domain.enums;
 
-public enum CommentStatus {
+public enum RequestStatus {
     APPROVED,
     REJECTED,
     WAITING

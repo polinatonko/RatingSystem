@@ -1,4 +1,4 @@
-package com.example.ratingsystem.domain.service;
+package com.example.ratingsystem.service;
 
 import com.example.ratingsystem.domain.entities.Game;
 import com.example.ratingsystem.repository.GameRepository;
@@ -27,7 +27,7 @@ public class GameService {
     }
 
     public Optional<Game> get(UUID id) {
-        return gameRepository.findById(id);
+        return id == null ? Optional.empty() : gameRepository.findById(id);
     }
 
     public List<Game> getAll() { return gameRepository.findAll(); }

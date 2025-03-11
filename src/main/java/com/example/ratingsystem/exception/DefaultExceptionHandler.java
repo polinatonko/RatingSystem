@@ -1,13 +1,42 @@
 package com.example.ratingsystem.exception;
 
+import com.example.ratingsystem.domain.dtos.error.ApiError;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class DefaultExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException ex) {
+        var error = new ApiError(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        var errors = ex.getBindingResult().getFieldErrors().
+                stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .toList();
+        var error = new ApiError(HttpStatus.BAD_REQUEST.value(), String.join("; ", errors));
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        String message = ex.getMessage().substring(ex.getMessage().indexOf(';') + 1);
+        var error = new ApiError(HttpStatus.BAD_REQUEST.value(), message);
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, InvalidRequestBodyException.class})
+    public ResponseEntity<ApiError> handleBadRequestExceptions(Exception ex) {
+        var error = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return ResponseEntity.badRequest().body(error);
     }
 }

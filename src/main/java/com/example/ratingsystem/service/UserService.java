@@ -1,17 +1,18 @@
-package com.example.ratingsystem.domain.service;
+package com.example.ratingsystem.service;
 
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public User create(User user) {
         return userRepository.save(user);
@@ -20,4 +21,6 @@ public class UserService {
     public Optional<User> get(UUID id) {
         return userRepository.findById(id);
     }
+
+    public List<User> getAll() { return userRepository.findAll(); }
 }
