@@ -39,4 +39,10 @@ public class DefaultExceptionHandler {
         var error = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(UniqueConstraintViolationException.class)
+    public ResponseEntity<ApiError> handleUniqueConstraintViolationException(UniqueConstraintViolationException ex) {
+        var error = new ApiError(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }

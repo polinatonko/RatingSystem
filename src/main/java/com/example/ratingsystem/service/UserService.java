@@ -18,6 +18,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public boolean exists(String email) {
+        return userRepository.existsByDetailsEmail(email);
+    }
+
     public Optional<User> get(UUID id) {
         return userRepository.findById(id);
     }

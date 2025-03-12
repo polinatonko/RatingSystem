@@ -5,6 +5,7 @@ import com.example.ratingsystem.domain.entities.SubmitRequest;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.domain.enums.RequestStatus;
 import com.example.ratingsystem.exception.EntityNotFoundException;
+import com.example.ratingsystem.exception.UniqueConstraintViolationException;
 import com.example.ratingsystem.repository.SubmitRequestRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class SubmitRequestService {
     private final SubmitRequestRepository requestRepository;
 
     public SubmitRequest create(SubmitRequest request) {
-        // TODO check if user with such email exists
+        checkUniqueEmail(request.getUserDetails().getEmail());
         request.setStatus(RequestStatus.WAITING);
         return requestRepository.save(request);
     }
@@ -31,6 +32,8 @@ public class SubmitRequestService {
         if (request.isProcessed()) {
             return;
         }
+
+        checkUniqueEmail(request.getUserDetails().getEmail());
 
         if (request.isRegistration()) {
             var seller = userService.create(new User(request.getUserDetails()));
@@ -62,5 +65,11 @@ public class SubmitRequestService {
     private void updateStatus(SubmitRequest request, RequestStatus status) {
         request.setStatus(status);
         requestRepository.save(request);
+    }
+
+    private void checkUniqueEmail(String email) {
+        if (userService.exists(email)) {
+            throw new UniqueConstraintViolationException("User with such email already exists");
+        }
     }
 }
