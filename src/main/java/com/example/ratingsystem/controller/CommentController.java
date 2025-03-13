@@ -2,13 +2,12 @@ package com.example.ratingsystem.controller;
 
 import com.example.ratingsystem.domain.dtos.comment.CommentRequestDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
-import com.example.ratingsystem.domain.dtos.submitrequest.SubmitRequestDto;
+import com.example.ratingsystem.domain.dtos.submitrequest.SubmitCommentAndRegisterRequestDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.entities.Comment;
 import com.example.ratingsystem.service.CommentService;
 import com.example.ratingsystem.service.SubmitRequestService;
 import com.example.ratingsystem.exception.EntityNotFoundException;
-import com.example.ratingsystem.exception.InvalidRequestBodyException;
 import com.example.ratingsystem.util.Mapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +28,10 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<SubmitResponseDto> submitAndRegister(
-            @RequestBody @Valid SubmitRequestDto dto
+            @RequestBody @Valid SubmitCommentAndRegisterRequestDto dto
     ) {
-        if (dto.getSellerId() == null && dto.getUserDetails() == null || dto.getCommentDetails() == null) {
-            throw new InvalidRequestBodyException(
-                    "Body should contains new comment details and either sellerId or new seller details"
-            );
-        }
-        var request = requestService.create(mapper.fromDto(dto));
-        return ResponseEntity.ok(new SubmitResponseDto(request));
+        var request = requestService.createRegistrationRequest(mapper.toSubmitRequest(dto));
+        return ResponseEntity.ok(mapper.toSubmitResponseDto(request));
     }
 
     @PutMapping("/{id}")

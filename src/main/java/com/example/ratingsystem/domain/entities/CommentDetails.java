@@ -23,4 +23,9 @@ public class CommentDetails {
     private int rating;
     @Column(columnDefinition = "TEXT")
     private String message;
+
+    public CommentDetails(int rating, String message) {
+        this.rating = rating;
+        this.message = message;
+    }
 }

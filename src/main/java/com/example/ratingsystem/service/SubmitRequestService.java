@@ -3,7 +3,9 @@ package com.example.ratingsystem.service;
 import com.example.ratingsystem.domain.entities.Comment;
 import com.example.ratingsystem.domain.entities.SubmitRequest;
 import com.example.ratingsystem.domain.entities.User;
+import com.example.ratingsystem.domain.entities.UserDetails;
 import com.example.ratingsystem.domain.enums.RequestStatus;
+import com.example.ratingsystem.domain.enums.UserRole;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.exception.UniqueConstraintViolationException;
 import com.example.ratingsystem.repository.SubmitRequestRepository;
@@ -11,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,19 +24,31 @@ public class SubmitRequestService {
     private final UserService userService;
     private final SubmitRequestRepository requestRepository;
 
-    public SubmitRequest create(SubmitRequest request) {
-        checkUniqueEmail(request.getUserDetails().getEmail());
-        request.setStatus(RequestStatus.WAITING);
-        return requestRepository.save(request);
+    public SubmitRequest createCommentRequest(SubmitRequest request) {
+        validateSeller(request.getSeller());
+        return updateStatus(request, RequestStatus.WAITING);
     }
 
-    public void approve(UUID id) {
+    public SubmitRequest createRegistrationRequest(SubmitRequest request) {
+        var userDetails= request.getUserDetails();
+        checkUniqueEmail(userDetails);
+        if (request.containsComment()) {
+            validateSellerRole(userDetails);
+        }
+        return updateStatus(request, RequestStatus.WAITING);
+    }
+
+    public Optional<SubmitRequest> get(UUID id) {
+        return requestRepository.findById(id);
+    }
+
+    public SubmitRequest approve(UUID id) {
         var request = getRequest(id);
         if (request.isProcessed()) {
-            return;
+            return request;
         }
 
-        checkUniqueEmail(request.getUserDetails().getEmail());
+        checkUniqueEmail(request.getUserDetails());
 
         if (request.isRegistration()) {
             var seller = userService.create(new User(request.getUserDetails()));
@@ -46,15 +61,15 @@ public class SubmitRequestService {
             commentService.create(comment);
         }
 
-        updateStatus(request, RequestStatus.APPROVED);
+        return updateStatus(request, RequestStatus.APPROVED);
     }
 
-    public void reject(UUID id) {
+    public SubmitRequest reject(UUID id) {
         var request = getRequest(id);
         if (request.isProcessed()) {
-            return;
+            return request;
         }
-        updateStatus(request, RequestStatus.REJECTED);
+        return updateStatus(request, RequestStatus.REJECTED);
     }
 
     private SubmitRequest getRequest(UUID id) {
@@ -62,14 +77,27 @@ public class SubmitRequestService {
                 .orElseThrow(() -> new EntityNotFoundException(id));
     }
 
-    private void updateStatus(SubmitRequest request, RequestStatus status) {
-        request.setStatus(status);
-        requestRepository.save(request);
+    private void validateSeller(User seller) {
+        if (seller == null || seller.getDetails().getRole() != UserRole.ROLE_SELLER) {
+            throw new EntityNotFoundException("Seller not found.");
+        }
+        validateSellerRole(seller.getDetails());
     }
 
-    private void checkUniqueEmail(String email) {
-        if (userService.exists(email)) {
-            throw new UniqueConstraintViolationException("User with such email already exists");
+    private void validateSellerRole(UserDetails details) {
+        if (details == null || details.getRole() != UserRole.ROLE_SELLER) {
+            throw new IllegalArgumentException("Comment can be submitted only to the seller's profile.");
         }
+    }
+
+    private void checkUniqueEmail(UserDetails userDetails) {
+        if (userDetails != null && userService.exists(userDetails.getEmail())) {
+            throw new UniqueConstraintViolationException("User with such email already exists.");
+        }
+    }
+
+    private SubmitRequest updateStatus(SubmitRequest request, RequestStatus status) {
+        request.setStatus(status);
+        return requestRepository.save(request);
     }
 }

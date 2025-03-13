@@ -1,11 +1,16 @@
 package com.example.ratingsystem.util;
 
 import com.example.ratingsystem.domain.dtos.comment.CommentRequestDto;
+import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
 import com.example.ratingsystem.domain.dtos.game.GameRequestDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectRequestDto;
-import com.example.ratingsystem.domain.dtos.submitrequest.SubmitRequestDto;
+import com.example.ratingsystem.domain.dtos.submitrequest.RequestStatusDto;
+import com.example.ratingsystem.domain.dtos.submitrequest.SubmitCommentAndRegisterRequestDto;
+import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.dtos.user.UserRequestDto;
+import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.domain.entities.*;
+import com.example.ratingsystem.domain.enums.RequestStatus;
 import com.example.ratingsystem.service.CommentService;
 import com.example.ratingsystem.service.GameObjectService;
 import com.example.ratingsystem.service.GameService;
@@ -55,14 +60,55 @@ public class Mapper {
     }
 
     public User fromDto(UserRequestDto dto) {
-        var details = new UserDetails(dto.firstName(), dto.lastName(), dto.password(), dto.email(), dto.role());
+        var details = new UserDetails(dto.getFirstName(), dto.getLastName(),
+                dto.getPassword(), dto.getEmail(), dto.getRole());
         return new User(details);
     }
 
-    public SubmitRequest fromDto(SubmitRequestDto dto) {
+    public SubmitRequest toSubmitRequest(SubmitCommentAndRegisterRequestDto dto) {
+        var author = getUserNullable(dto.getAuthorId());
+        return SubmitRequest.builder()
+                .commentDetails(dto.getCommentDetails())
+                .userDetails(dto.getUserDetails())
+                .author(author)
+                .build();
+    }
+
+    public SubmitRequest toSubmitRequest(CommentRequestDto dto) {
         var seller = getUserNullable(dto.getSellerId());
         var author = getUserNullable(dto.getAuthorId());
-        return new SubmitRequest(dto.getCommentDetails(), dto.getUserDetails(), seller, author);
+        var commentDetails = new CommentDetails(dto.getRating(), dto.getMessage());
+        return SubmitRequest.builder()
+                .commentDetails(commentDetails)
+                .seller(seller)
+                .author(author)
+                .build();
+    }
+
+    public SubmitRequest toSubmitRequest(UserRequestDto dto) {
+        var userDetails = new UserDetails(dto.getFirstName(), dto.getLastName(),
+                dto.getPassword(), dto.getEmail(), dto.getRole());
+        return SubmitRequest.builder()
+                .userDetails(userDetails)
+                .build();
+    }
+
+    public SubmitResponseDto toSubmitResponseDto(SubmitRequest request) {
+        var response = SubmitResponseDto.builder().id(request.getId());
+        if (request.getCommentDetails() != null) {
+            var comment = commentService.get(request.getCommentDetails().getId())
+                    .map(CommentResponseDto::new)
+                    .orElse(new CommentResponseDto(request.getCommentDetails()));
+            response.comment(comment);
+        }
+        if (request.getUserDetails() != null) {
+            var user = userService.get(request.getUserDetails().getId())
+                    .map(UserResponseDto::new)
+                    .orElse(new UserResponseDto(request.getUserDetails()));
+            response.user(user);
+        }
+        response.status(request.getStatus());
+        return response.build();
     }
 
     private User getUser(UUID id) {

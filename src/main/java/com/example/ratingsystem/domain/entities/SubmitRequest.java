@@ -3,9 +3,7 @@ package com.example.ratingsystem.domain.entities;
 import com.example.ratingsystem.domain.enums.RequestStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -16,6 +14,8 @@ import java.util.UUID;
 @Table(name = "submit_requests")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class SubmitRequest extends BasicEntity {
     @Id
@@ -38,13 +38,6 @@ public class SubmitRequest extends BasicEntity {
     private User seller;
     @ManyToOne
     private User author;
-
-    public SubmitRequest(CommentDetails commentDetails, UserDetails userDetails, User seller, User author) {
-        this.commentDetails = commentDetails;
-        this.userDetails = userDetails;
-        this.seller = seller;
-        this.author = author;
-    }
 
     public boolean containsComment() { return commentDetails != null; }
 

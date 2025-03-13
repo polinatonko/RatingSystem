@@ -1,6 +1,7 @@
 package com.example.ratingsystem.domain.dtos.user;
 
 import com.example.ratingsystem.domain.entities.User;
+import com.example.ratingsystem.domain.entities.UserDetails;
 import com.example.ratingsystem.domain.enums.UserRole;
 import lombok.Data;
 
@@ -17,12 +18,17 @@ public class UserResponseDto {
     private boolean isEnabled;
 
     public UserResponseDto(User user) {
+        this(user.getDetails());
         this.id = user.getId();
-        this.firstName = user.getDetails().getFirstName();
-        this.lastName = user.getDetails().getLastName();
-        this.password = user.getDetails().getPassword();
-        this.email = user.getDetails().getEmail();
-        this.role = user.getDetails().getRole();
         this.isEnabled = user.isEnabled();
+    }
+
+    public UserResponseDto(UserDetails details) {
+        this.id = details.getId();
+        this.firstName = details.getFirstName();
+        this.lastName = details.getLastName();
+        this.password = details.getPassword();
+        this.email = details.getEmail();
+        this.role = details.getRole();
     }
 }

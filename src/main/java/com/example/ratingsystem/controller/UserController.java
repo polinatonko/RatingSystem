@@ -1,11 +1,11 @@
 package com.example.ratingsystem.controller;
 
+import com.example.ratingsystem.domain.dtos.comment.CommentRequestDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectResponseDto;
-import com.example.ratingsystem.domain.dtos.submitrequest.SubmitRequestDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
+import com.example.ratingsystem.domain.dtos.user.UserRequestDto;
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
-import com.example.ratingsystem.exception.InvalidRequestBodyException;
 import com.example.ratingsystem.service.CommentService;
 import com.example.ratingsystem.service.GameObjectService;
 import com.example.ratingsystem.service.SubmitRequestService;
@@ -33,24 +33,18 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<SubmitResponseDto> register(@RequestBody @Valid SubmitRequestDto dto) {
-        if (dto.getUserDetails() == null) {
-            throw new InvalidRequestBodyException("Body should contains new user details");
-        }
-        var request = requestService.create(mapper.fromDto(dto));
-        return ResponseEntity.ok(new SubmitResponseDto(request));
+    public ResponseEntity<SubmitResponseDto> register(@RequestBody @Valid UserRequestDto dto) {
+        var request = requestService.createRegistrationRequest(mapper.toSubmitRequest(dto));
+        return ResponseEntity.ok(mapper.toSubmitResponseDto(request));
     }
 
 
     @PostMapping("/{sellerId}/comments")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<SubmitResponseDto> create(@PathVariable UUID sellerId, @RequestBody @Validated SubmitRequestDto dto) {
-        if (dto.getCommentDetails() == null) {
-            throw new InvalidRequestBodyException("Body should contains new comment details");
-        }
+    public ResponseEntity<SubmitResponseDto> create(@PathVariable UUID sellerId, @RequestBody @Validated CommentRequestDto dto) {
         dto.setSellerId(sellerId);
-        var request = requestService.create(mapper.fromDto(dto));
-        return ResponseEntity.ok(new SubmitResponseDto(request));
+        var request = requestService.createCommentRequest(mapper.toSubmitRequest(dto));
+        return ResponseEntity.ok(mapper.toSubmitResponseDto(request));
     }
 
     @GetMapping("/{sellerId}/comments")
