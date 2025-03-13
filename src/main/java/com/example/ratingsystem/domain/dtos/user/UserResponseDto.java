@@ -16,12 +16,7 @@ public class UserResponseDto {
     private String email;
     private UserRole role;
     private boolean isEnabled;
-
-    public UserResponseDto(User user) {
-        this(user.getDetails());
-        this.id = user.getId();
-        this.isEnabled = user.isEnabled();
-    }
+    private double rating;
 
     public UserResponseDto(UserDetails details) {
         this.id = details.getId();
@@ -30,5 +25,16 @@ public class UserResponseDto {
         this.password = details.getPassword();
         this.email = details.getEmail();
         this.role = details.getRole();
+    }
+
+    public UserResponseDto(User user) {
+        this(user.getDetails());
+        this.id = user.getId();
+        this.isEnabled = user.isEnabled();
+    }
+
+    public UserResponseDto(User user, double rating) {
+        this(user);
+        this.rating = rating;
     }
 }

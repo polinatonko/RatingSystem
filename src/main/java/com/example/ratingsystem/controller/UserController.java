@@ -6,6 +6,7 @@ import com.example.ratingsystem.domain.dtos.gameobject.GameObjectResponseDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.dtos.user.UserRequestDto;
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
+import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.service.CommentService;
 import com.example.ratingsystem.service.GameObjectService;
 import com.example.ratingsystem.service.SubmitRequestService;
@@ -15,19 +16,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final GameObjectService gameObjectService;
     private final SubmitRequestService requestService;
-    private final CommentService commentService;
     private final UserService userService;
     private final Mapper mapper;
 
@@ -38,36 +35,15 @@ public class UserController {
         return ResponseEntity.ok(mapper.toSubmitResponseDto(request));
     }
 
-
-    @PostMapping("/{sellerId}/comments")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<SubmitResponseDto> create(@PathVariable UUID sellerId, @RequestBody @Validated CommentRequestDto dto) {
-        dto.setSellerId(sellerId);
-        var request = requestService.createCommentRequest(mapper.toSubmitRequest(dto));
-        return ResponseEntity.ok(mapper.toSubmitResponseDto(request));
-    }
-
-    @GetMapping("/{sellerId}/comments")
-    public ResponseEntity<List<CommentResponseDto>> getSellerComments(@PathVariable UUID sellerId) {
-        var comments = commentService.getBySellerId(sellerId)
-                .stream()
-                .map(CommentResponseDto::new)
-                .toList();
-        return ResponseEntity.ok(comments);
-    }
-
-    @GetMapping("/{id}/objects")
-    public ResponseEntity<List<GameObjectResponseDto>> getGameObjects(@PathVariable UUID id) {
-        var objects = gameObjectService.getByUserId(id)
-                .stream()
-                .map(GameObjectResponseDto::new)
-                .toList();
-        return ResponseEntity.ok(objects);
-    }
-
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> getAll() {
         var users = userService.getAll();
-        return ResponseEntity.ok(users.stream().map(UserResponseDto::new).toList());
+        return ResponseEntity.ok(users.stream().map(this::toDto).toList());
+    }
+
+    private UserResponseDto toDto(User user) {
+        var dto = new UserResponseDto(user);
+        dto.setRating(userService.calculateRating(user));
+        return dto;
     }
 }
