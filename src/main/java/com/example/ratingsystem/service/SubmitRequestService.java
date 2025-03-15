@@ -1,9 +1,6 @@
 package com.example.ratingsystem.service;
 
-import com.example.ratingsystem.domain.entities.Comment;
-import com.example.ratingsystem.domain.entities.SubmitRequest;
-import com.example.ratingsystem.domain.entities.User;
-import com.example.ratingsystem.domain.entities.UserDetails;
+import com.example.ratingsystem.domain.entities.*;
 import com.example.ratingsystem.domain.enums.RequestStatus;
 import com.example.ratingsystem.domain.enums.UserRole;
 import com.example.ratingsystem.exception.EntityNotFoundException;
@@ -31,16 +28,14 @@ public class SubmitRequestService {
 
     public SubmitRequest createCommentRequest(SubmitRequest request) {
         validateSeller(request.getSeller());
+        fillInAuthor(request);
         return updateStatusAndSave(request, RequestStatus.WAITING);
     }
 
     public SubmitRequest createRegistrationRequest(SubmitRequest request) {
         var userDetails= request.getUserDetails();
-
-        var authUser = AuthUtils.getAuthenticatedUser();
-        if (userDetails.getRole() == UserRole.ROLE_ADMIN &&
-                (authUser == null || authUser.getRole() != UserRole.ROLE_ADMIN)) {
-            throw new AccessDeniedException("Only admin can register other admins");
+        if (userDetails.getRole() == UserRole.ROLE_ADMIN) {
+            checkAdminRole();
         }
 
         userDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
@@ -48,6 +43,7 @@ public class SubmitRequestService {
         if (request.containsComment()) {
             validateSellerRole(userDetails);
         }
+        fillInAuthor(request);
         return updateStatusAndSave(request, RequestStatus.WAITING);
     }
 
@@ -66,6 +62,9 @@ public class SubmitRequestService {
         if (request.isRegistration()) {
             var seller = userService.create(new User(request.getUserDetails()));
             request.setSeller(seller);
+
+            var email = request.getUserDetails().getEmail();
+            authService.sendConfirmationEmail(email);
         }
 
         if (request.containsComment()) {
@@ -73,9 +72,6 @@ public class SubmitRequestService {
             var comment = new Comment(commentDetails, request.getSeller(), request.getAuthor());
             commentService.create(comment);
         }
-
-        var email = request.getUserDetails().getEmail();
-        authService.sendConfirmationEmail(email);
 
         return updateStatusAndSave(request, RequestStatus.APPROVED);
     }
@@ -109,8 +105,30 @@ public class SubmitRequestService {
         }
     }
 
+    private void checkAdminRole() {
+        var authUser = AuthUtils.getAuthenticatedUser();
+        if (authUser != null) {
+            boolean isAdmin = authUser.getAuthorities().stream()
+                    .map(auth -> UserRole.valueOf(auth.getAuthority()))
+                    .anyMatch(role -> role == UserRole.ROLE_ADMIN);
+            if (!isAdmin) {
+                throw new AccessDeniedException("Administrator's privileges required");
+            }
+        }
+    }
+
     private SubmitRequest updateStatusAndSave(SubmitRequest request, RequestStatus status) {
         request.setStatus(status);
         return requestRepository.save(request);
+    }
+
+    private void fillInAuthor(SubmitRequest request) {
+        var authUser = AuthUtils.getAuthenticatedUser();
+        if (authUser != null) {
+            var user = userService.getByEmail(authUser.getUsername())
+                    .orElseThrow(() ->
+                            new EntityNotFoundException("User with email=" + authUser.getUsername() + " not found"));
+            request.setAuthor(user);
+        }
     }
 }

@@ -17,5 +17,6 @@ public class SubmitResponseDto {
     private UUID id;
     private CommentResponseDto comment;
     private UserResponseDto user;
+    private UUID authorId;
     private RequestStatus status;
 }

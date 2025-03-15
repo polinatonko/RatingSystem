@@ -98,6 +98,9 @@ public class Mapper {
                     .map(CommentResponseDto::new)
                     .orElse(new CommentResponseDto(request.getCommentDetails()));
             response.comment(comment);
+            if (request.getAuthor() != null) {
+                response.authorId(request.getAuthor().getId());
+            }
         }
         if (request.getUserDetails() != null) {
             var user = userService.get(request.getUserDetails().getId())
