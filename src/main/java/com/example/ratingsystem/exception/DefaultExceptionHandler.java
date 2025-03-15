@@ -36,7 +36,9 @@ public class DefaultExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler({HttpMessageNotReadableException.class, InvalidRequestBodyException.class})
+    @ExceptionHandler({HttpMessageNotReadableException.class,
+            InvalidRequestBodyException.class,
+            InvalidRequestParamValueException.class})
     public ResponseEntity<ApiError> handleBadRequestExceptions(Exception ex) {
         var error = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return ResponseEntity.badRequest().body(error);

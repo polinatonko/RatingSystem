@@ -13,6 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +50,10 @@ public class SubmitRequestService {
 
     public Optional<SubmitRequest> get(UUID id) {
         return requestRepository.findById(id);
+    }
+
+    public List<SubmitRequest> getByStatus(RequestStatus status) {
+        return status != null ? requestRepository.findByStatus(status) : requestRepository.findAll();
     }
 
     public SubmitRequest approve(UUID id) {
