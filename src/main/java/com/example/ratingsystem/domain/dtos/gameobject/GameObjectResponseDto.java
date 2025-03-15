@@ -19,6 +19,7 @@ public class GameObjectResponseDto {
     public GameObjectResponseDto(GameObject object) {
         this.id = object.getId();
         this.title = object.getTitle();
+        this.text = object.getText();
         this.sellerId = object.getUser().getId();
         this.gameId = object.getGame().getId();
         this.createdAt = object.getCreatedAt();

@@ -4,10 +4,14 @@ import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.domain.entities.Comment;
 import com.example.ratingsystem.domain.entities.CommentDetails;
 import com.example.ratingsystem.domain.entities.User;
+import com.example.ratingsystem.domain.entities.UserDetailsImpl;
 import com.example.ratingsystem.domain.enums.UserRole;
 import com.example.ratingsystem.repository.CommentRepository;
 import com.example.ratingsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -51,5 +55,15 @@ public class UserService {
                 .mapToInt(CommentDetails::getRating)
                 .average()
                 .orElse(0);
+    }
+
+    public UserDetailsService userDetailsService() {
+        return this::getUserByUsername;
+    }
+
+    public UserDetails getUserByUsername(String username) throws UsernameNotFoundException {
+        var user = userRepository.findByDetailsEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email = " + username + " not found"));
+        return new UserDetailsImpl(user);
     }
 }

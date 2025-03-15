@@ -11,6 +11,7 @@ import com.example.ratingsystem.exception.UniqueConstraintViolationException;
 import com.example.ratingsystem.repository.SubmitRequestRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class SubmitRequestService {
     private final CommentService commentService;
     private final UserService userService;
     private final SubmitRequestRepository requestRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public SubmitRequest createCommentRequest(SubmitRequest request) {
         validateSeller(request.getSeller());
@@ -31,6 +33,7 @@ public class SubmitRequestService {
 
     public SubmitRequest createRegistrationRequest(SubmitRequest request) {
         var userDetails= request.getUserDetails();
+        userDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         checkUniqueEmail(userDetails);
         if (request.containsComment()) {
             validateSellerRole(userDetails);
