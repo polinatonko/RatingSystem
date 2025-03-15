@@ -4,6 +4,8 @@ import com.example.ratingsystem.domain.dtos.error.ApiError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -50,5 +52,11 @@ public class DefaultExceptionHandler {
     public ResponseEntity<ApiError> handleRuntimeException(RuntimeException ex) {
         var error = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         return ResponseEntity.internalServerError().body(error);
+    }
+
+    @ExceptionHandler({DisabledException.class, AccessDeniedException.class})
+    public ResponseEntity<ApiError> handleDisabledException(Exception ex) {
+        var error = new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }

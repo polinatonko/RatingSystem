@@ -6,6 +6,7 @@ import com.example.ratingsystem.domain.entities.CommentDetails;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.domain.entities.UserDetailsImpl;
 import com.example.ratingsystem.domain.enums.UserRole;
+import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.repository.CommentRepository;
 import com.example.ratingsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,18 @@ public class UserService {
 
     public List<User> getAll() { return userRepository.findAll(); }
 
+    public void enable(String email) {
+        var user = findByEmailOrThrowException(email);
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
+    public void updatePassword(String email, String password) {
+        var user = findByEmailOrThrowException(email);
+        user.getDetails().setPassword(password);
+        userRepository.save(user);
+    }
+
     public List<UserResponseDto> getTopSellers(int count) {
         return userRepository.findByDetailsRole(UserRole.ROLE_SELLER)
                 .stream()
@@ -62,8 +75,12 @@ public class UserService {
     }
 
     public UserDetails getUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByDetailsEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with email = " + username + " not found"));
+        var user = findByEmailOrThrowException(username);
         return new UserDetailsImpl(user);
+    }
+
+    private User findByEmailOrThrowException(String email) {
+        return userRepository.findByDetailsEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User with email = " + email + " not found"));
     }
 }
