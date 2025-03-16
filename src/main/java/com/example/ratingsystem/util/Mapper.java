@@ -10,6 +10,7 @@ import com.example.ratingsystem.domain.dtos.submitrequest.SubmitCommentAndRegist
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.dtos.user.UserRequestDto;
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
+import com.example.ratingsystem.domain.dtos.user.UserUpdateDto;
 import com.example.ratingsystem.domain.entities.*;
 import com.example.ratingsystem.service.CommentService;
 import com.example.ratingsystem.service.GameObjectService;
@@ -80,10 +81,15 @@ public class Mapper {
         return comment;
     }
 
-    public User fromDto(UserRequestDto dto) {
-        var details = new UserInfo(dto.getFirstName(), dto.getLastName(),
-                dto.getPassword(), dto.getEmail(), dto.getRole());
-        return new User(details);
+    public User fromDto(UserUpdateDto dto) {
+        var user = getUser(dto.getId());
+        if (dto.getFirstName() != null) {
+            user.getDetails().setFirstName(dto.getFirstName());
+        }
+        if (dto.getLastName() != null) {
+            user.getDetails().setLastName(dto.getLastName());
+        }
+        return user;
     }
 
     public SubmitRequest toSubmitRequest(SubmitCommentAndRegisterRequestDto dto) {

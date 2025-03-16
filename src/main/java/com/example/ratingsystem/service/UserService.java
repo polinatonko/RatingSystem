@@ -4,25 +4,20 @@ import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.domain.entities.Comment;
 import com.example.ratingsystem.domain.entities.CommentDetails;
 import com.example.ratingsystem.domain.entities.User;
-import com.example.ratingsystem.domain.entities.UserDetailsImpl;
 import com.example.ratingsystem.domain.enums.UserRole;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.repository.CommentRepository;
 import com.example.ratingsystem.repository.UserRepository;
+import com.example.ratingsystem.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
@@ -46,6 +41,19 @@ public class UserService implements UserDetailsService {
         var user = findByEmailOrThrowException(email);
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    public User update(User user) {
+        validateUserAccess(user);
+        return userRepository.save(user);
+    }
+
+    public void delete(UUID id) {
+        userRepository.findById(id)
+                .ifPresent(user -> {
+                    validateUserAccess(user);
+                    userRepository.deleteById(id);
+                });
     }
 
     public void updatePassword(String email, String password) {
@@ -72,14 +80,22 @@ public class UserService implements UserDetailsService {
                 .orElse(0);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = findByEmailOrThrowException(username);
-        return new UserDetailsImpl(user);
+    public boolean validateAuthenticatedUser(UUID id) {
+        var userDetails = AuthUtils.getAuthenticatedUserDetails();
+        Optional<User> authUser = userDetails != null
+                ? userRepository.findByDetailsEmail(userDetails.getUsername())
+                : Optional.empty();
+        return authUser.isPresent() && Objects.equals(authUser.get().getId(), id);
     }
 
     private User findByEmailOrThrowException(String email) {
         return userRepository.findByDetailsEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User with email = " + email + " not found"));
+    }
+
+    private void validateUserAccess(User user) {
+        if (!validateAuthenticatedUser(user.getId())) {
+            throw new AccessDeniedException("Only user can manage his account");
+        }
     }
 }

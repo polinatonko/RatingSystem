@@ -2,17 +2,12 @@ package com.example.ratingsystem.service;
 
 import com.example.ratingsystem.domain.entities.ConfirmEmailEntity;
 import com.example.ratingsystem.domain.entities.Email;
-import com.example.ratingsystem.domain.entities.User;
-import com.example.ratingsystem.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,11 +15,12 @@ public class AuthService {
     private final ConfirmEmailEntityService confirmEmailService;
     private final JwtService jwtService;
     private final UserService userService;
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final EmailSender emailSender;
 
     public String login(String email, String password) {
-        var userDetails = userService.loadUserByUsername(email);
+        var userDetails = userDetailsService.loadUserByUsername(email);
         if (!userDetails.isEnabled()) {
             throw new DisabledException("Account is disabled");
         }
@@ -48,7 +44,7 @@ public class AuthService {
     }
 
     public void sendConfirmationEmail(String email) {
-        var userDetails = userService.loadUserByUsername(email);
+        var userDetails = userDetailsService.loadUserByUsername(email);
         var token = jwtService.generateToken(userDetails);
 
         var emailText = """
@@ -59,13 +55,5 @@ public class AuthService {
                 """ + token;
         var mail = new Email(email, "Confirmation link", emailText);
         emailSender.send(mail);
-    }
-
-    public boolean validateAuthenticatedUser(UUID id) {
-        var userDetails = AuthUtils.getAuthenticatedUserDetails();
-        Optional<User> authUser = userDetails != null
-                ? userService.getByEmail(userDetails.getUsername())
-                : Optional.empty();
-        return authUser.isPresent() && Objects.equals(authUser.get().getId(), id);
     }
 }

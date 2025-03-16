@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    private final AuthService authService;
+    private final UserService userService;
     private final CommentRepository commentRepository;
 
     public Comment create(Comment comment) {
@@ -43,7 +43,7 @@ public class CommentService {
     }
 
     private void validateAuthorAccess(User author) {
-        if (author == null || !authService.validateAuthenticatedUser(author.getId())) {
+        if (author == null || !userService.validateAuthenticatedUser(author.getId())) {
             throw new AccessDeniedException("Only author can manage their comments");
         }
     }

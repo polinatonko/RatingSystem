@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +16,12 @@ public class PasswordResetService {
     private final JwtService jwtService;
     private final TokenService<PasswordResetEntity, String> passwordResetEntityService;
     private final UserService userService;
+    private final UserDetailsService userDetailsService;
     private final EmailSender emailSender;
     private final PasswordEncoder passwordEncoder;
 
     public void sendPasswordResetEmail(String email) {
-        var userDetails = userService.loadUserByUsername(email);
+        var userDetails = userDetailsService.loadUserByUsername(email);
         checkUserDetailsStatus(userDetails);
 
         var token = jwtService.generateToken(userDetails);
@@ -37,7 +39,7 @@ public class PasswordResetService {
 
     public void resetPassword(String token, String newPassword) {
         var username = jwtService.extractUsername(token);
-        var userDetails = userService.loadUserByUsername(username);
+        var userDetails = userDetailsService.loadUserByUsername(username);
         checkUserDetailsStatus(userDetails);
 
         if (!passwordResetEntityService.isValid(userDetails.getUsername(), token)) {

@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class GameObjectService {
-    private final AuthService authService;
+    private final UserService userService;
     private final GameObjectRepository gameObjectRepository;
 
     public GameObject create(GameObject object) {
@@ -51,7 +51,7 @@ public class GameObjectService {
     }
 
     private void validateSellerAccess(User objectOwner) {
-        if (!authService.validateAuthenticatedUser(objectOwner.getId())) {
+        if (!userService.validateAuthenticatedUser(objectOwner.getId())) {
             throw new AccessDeniedException("Only seller can manage his objects.");
         }
     }
