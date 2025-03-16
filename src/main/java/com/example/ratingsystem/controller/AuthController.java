@@ -1,5 +1,6 @@
 package com.example.ratingsystem.controller;
 
+import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.auth.*;
 import com.example.ratingsystem.service.*;
 import jakarta.validation.Valid;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Loggable
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor

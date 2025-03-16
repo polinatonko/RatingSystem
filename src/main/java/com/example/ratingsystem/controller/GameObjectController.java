@@ -1,5 +1,6 @@
 package com.example.ratingsystem.controller;
 
+import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectRequestDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectResponseDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectUpdateDto;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.UUID;
 
+@Loggable
 @RestController
 @RequestMapping("/objects")
 @RequiredArgsConstructor

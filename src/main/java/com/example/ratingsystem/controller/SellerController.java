@@ -1,5 +1,6 @@
 package com.example.ratingsystem.controller;
 
+import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.comment.CommentRequestDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectResponseDto;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Loggable
 @RestController
 @RequestMapping("/sellers")
 @RequiredArgsConstructor

@@ -1,5 +1,6 @@
 package com.example.ratingsystem.controller;
 
+import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentUpdateDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitCommentAndRegisterRequestDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Loggable
 @RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor

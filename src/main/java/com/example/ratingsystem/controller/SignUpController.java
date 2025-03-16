@@ -1,5 +1,6 @@
 package com.example.ratingsystem.controller;
 
+import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.auth.MessageResponseDto;
 import com.example.ratingsystem.domain.dtos.auth.TokenDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Loggable
 @RestController
 @RequestMapping("/signup")
 @RequiredArgsConstructor

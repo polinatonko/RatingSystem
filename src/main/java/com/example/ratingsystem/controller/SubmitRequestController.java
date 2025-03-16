@@ -1,5 +1,6 @@
 package com.example.ratingsystem.controller;
 
+import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.submitrequest.RequestStatusDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.enums.RequestStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Loggable
 @RestController
 @RequestMapping("/requests")
 @RequiredArgsConstructor
