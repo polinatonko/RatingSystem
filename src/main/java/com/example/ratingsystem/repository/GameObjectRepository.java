@@ -1,6 +1,7 @@
 package com.example.ratingsystem.repository;
 
 import com.example.ratingsystem.domain.entities.GameObject;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,5 @@ import java.util.UUID;
 public interface GameObjectRepository extends JpaRepository<GameObject, UUID> {
     List<GameObject> findByGameId(UUID id);
     List<GameObject> findByUserId(UUID id);
+    List<GameObject> findAll(Specification<Object> spec);
 }
