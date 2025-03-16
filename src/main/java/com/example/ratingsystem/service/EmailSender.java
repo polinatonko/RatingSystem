@@ -1,5 +1,7 @@
 package com.example.ratingsystem.service;
 
+import com.example.ratingsystem.domain.entities.Email;
+
 public interface EmailSender {
-    void sendSimpleEmail(String from, String to, String subject, String text);
+    void send(Email email);
 }

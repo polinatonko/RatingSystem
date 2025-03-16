@@ -1,6 +1,7 @@
 package com.example.ratingsystem.service;
 
 import com.example.ratingsystem.domain.entities.ConfirmEmailEntity;
+import com.example.ratingsystem.domain.entities.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -17,7 +18,7 @@ public class AuthService {
     private final EmailSender emailSender;
 
     public String login(String email, String password) {
-        var userDetails = userService.getUserByUsername(email);
+        var userDetails = userService.loadUserByUsername(email);
         if (!userDetails.isEnabled()) {
             throw new DisabledException("Account is disabled");
         }
@@ -41,7 +42,7 @@ public class AuthService {
     }
 
     public void sendConfirmationEmail(String email) {
-        var userDetails = userService.getUserByUsername(email);
+        var userDetails = userService.loadUserByUsername(email);
         var token = jwtService.generateToken(userDetails);
 
         var emailText = """
@@ -50,6 +51,7 @@ public class AuthService {
                 Request body template: { "token": <token> }.
                 Token value:
                 """ + token;
-        emailSender.sendSimpleEmail("tonkopolina@gmail.com", email, "Confirmation link", emailText);
+        var mail = new Email(email, "Confirmation link", emailText);
+        emailSender.send(mail);
     }
 }

@@ -33,7 +33,7 @@ public class User extends BasicEntity {
     @MapsId
     @JoinColumn(name = "id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private UserDetails details;
+    private UserInfo details;
     @OneToMany(mappedBy = "seller")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<com.example.ratingsystem.domain.entities.Comment> othersComments;
@@ -44,7 +44,7 @@ public class User extends BasicEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<GameObject> objects;
 
-    public User(UserDetails details) {
+    public User(UserInfo details) {
         this.details = details;
     }
 }

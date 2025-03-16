@@ -33,7 +33,7 @@ public class SubmitRequest extends BasicEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(unique = true)
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    private UserDetails userDetails;
+    private UserInfo userDetails;
     @ManyToOne
     private User seller;
     @ManyToOne

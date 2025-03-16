@@ -1,7 +1,7 @@
 package com.example.ratingsystem.domain.dtos.user;
 
 import com.example.ratingsystem.domain.entities.User;
-import com.example.ratingsystem.domain.entities.UserDetails;
+import com.example.ratingsystem.domain.entities.UserInfo;
 import com.example.ratingsystem.domain.enums.UserRole;
 import lombok.Data;
 
@@ -18,7 +18,7 @@ public class UserResponseDto {
     private boolean isEnabled;
     private double rating;
 
-    public UserResponseDto(UserDetails details) {
+    public UserResponseDto(UserInfo details) {
         this.id = details.getId();
         this.firstName = details.getFirstName();
         this.lastName = details.getLastName();

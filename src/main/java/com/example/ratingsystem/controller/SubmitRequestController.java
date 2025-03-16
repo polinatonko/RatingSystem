@@ -2,7 +2,6 @@ package com.example.ratingsystem.controller;
 
 import com.example.ratingsystem.domain.dtos.submitrequest.RequestStatusDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
-import com.example.ratingsystem.domain.entities.SubmitRequest;
 import com.example.ratingsystem.domain.enums.RequestStatus;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.exception.InvalidRequestParamValueException;
@@ -10,7 +9,6 @@ import com.example.ratingsystem.service.SubmitRequestService;
 import com.example.ratingsystem.util.Mapper;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

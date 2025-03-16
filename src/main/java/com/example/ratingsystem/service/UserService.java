@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
@@ -72,11 +72,8 @@ public class UserService {
                 .orElse(0);
     }
 
-    public UserDetailsService userDetailsService() {
-        return this::getUserByUsername;
-    }
-
-    public UserDetails getUserByUsername(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = findByEmailOrThrowException(username);
         return new UserDetailsImpl(user);
     }

@@ -1,7 +1,7 @@
 package com.example.ratingsystem.domain.dtos.submitrequest;
 
 import com.example.ratingsystem.domain.entities.CommentDetails;
-import com.example.ratingsystem.domain.entities.UserDetails;
+import com.example.ratingsystem.domain.entities.UserInfo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -15,6 +15,6 @@ public class SubmitCommentAndRegisterRequestDto {
     private CommentDetails commentDetails;
     @Valid
     @NotNull
-    private UserDetails userDetails;
+    private UserInfo userDetails;
     private UUID authorId;
 }

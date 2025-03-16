@@ -1,5 +1,6 @@
 package com.example.ratingsystem.service;
 
+import com.example.ratingsystem.domain.entities.Email;
 import com.example.ratingsystem.domain.entities.PasswordResetEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,7 +19,7 @@ public class PasswordResetService {
     private final PasswordEncoder passwordEncoder;
 
     public void sendPasswordResetEmail(String email) {
-        var userDetails = userService.getUserByUsername(email);
+        var userDetails = userService.loadUserByUsername(email);
         checkUserDetailsStatus(userDetails);
 
         var token = jwtService.generateToken(userDetails);
@@ -30,12 +31,13 @@ public class PasswordResetService {
                 Body template: { "token": <token>, "new_passsword": <new_password> }.
                 Your token (valid for 24 hours):
                 """ + token;
-        emailSender.sendSimpleEmail("polinatonko@gmail.com", email, "Reset password", emailText);
+        var mail = new Email(email, "Reset password", emailText);
+        emailSender.send(mail);
     }
 
     public void resetPassword(String token, String newPassword) {
         var username = jwtService.extractUsername(token);
-        var userDetails = userService.getUserByUsername(username);
+        var userDetails = userService.loadUserByUsername(username);
         checkUserDetailsStatus(userDetails);
 
         if (!passwordResetEntityService.isValid(userDetails.getUsername(), token)) {

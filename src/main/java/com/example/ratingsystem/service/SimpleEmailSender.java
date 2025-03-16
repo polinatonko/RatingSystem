@@ -1,5 +1,6 @@
 package com.example.ratingsystem.service;
 
+import com.example.ratingsystem.domain.entities.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -7,16 +8,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailSenderService implements EmailSender {
+public class SimpleEmailSender implements EmailSender {
     private final JavaMailSender mailSender;
 
     @Override
-    public void sendSimpleEmail(String from, String to, String subject, String text) {
+    public void send(Email email) {
         var message = new SimpleMailMessage();
-        message.setFrom(from);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        message.setFrom(email.getFrom());
+        message.setTo(email.getTo());
+        message.setSubject(email.getSubject());
+        message.setText(email.getText());
         mailSender.send(message);
     }
 }

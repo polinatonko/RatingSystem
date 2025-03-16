@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "user_details")
 @Data
 @NoArgsConstructor
-public class UserDetails {
+public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -34,7 +34,7 @@ public class UserDetails {
     @NotNull
     private UserRole role;
 
-    public UserDetails(String firstName, String lastName, String password, String email, UserRole role) {
+    public UserInfo(String firstName, String lastName, String password, String email, UserRole role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;

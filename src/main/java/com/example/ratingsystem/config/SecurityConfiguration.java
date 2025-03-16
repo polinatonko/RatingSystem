@@ -1,8 +1,6 @@
 package com.example.ratingsystem.config;
 
 import com.example.ratingsystem.filter.JwtAuthenticationFilter;
-import com.example.ratingsystem.repository.UserRepository;
-import com.example.ratingsystem.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,11 +41,6 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return new UserDetailsServiceImpl(userRepository);
     }
 
     @Bean

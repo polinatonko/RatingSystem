@@ -58,7 +58,7 @@ public class Mapper {
     }
 
     public User fromDto(UserRequestDto dto) {
-        var details = new UserDetails(dto.getFirstName(), dto.getLastName(),
+        var details = new UserInfo(dto.getFirstName(), dto.getLastName(),
                 dto.getPassword(), dto.getEmail(), dto.getRole());
         return new User(details);
     }
@@ -84,7 +84,7 @@ public class Mapper {
     }
 
     public SubmitRequest toSubmitRequest(UserRequestDto dto) {
-        var userDetails = new UserDetails(dto.getFirstName(), dto.getLastName(),
+        var userDetails = new UserInfo(dto.getFirstName(), dto.getLastName(),
                 dto.getPassword(), dto.getEmail(), dto.getRole());
         return SubmitRequest.builder()
                 .userDetails(userDetails)

@@ -98,13 +98,13 @@ public class SubmitRequestService {
         validateSellerRole(seller.getDetails());
     }
 
-    private void validateSellerRole(UserDetails details) {
+    private void validateSellerRole(UserInfo details) {
         if (details == null || details.getRole() != UserRole.ROLE_SELLER) {
             throw new IllegalArgumentException("Comment can be submitted only to the seller's profile.");
         }
     }
 
-    private void checkUniqueEmail(UserDetails userDetails) {
+    private void checkUniqueEmail(UserInfo userDetails) {
         if (userDetails != null && userService.exists(userDetails.getEmail())) {
             throw new UniqueConstraintViolationException("User with such email already exists.");
         }
