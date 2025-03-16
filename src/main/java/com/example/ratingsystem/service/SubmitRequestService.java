@@ -111,7 +111,7 @@ public class SubmitRequestService {
     }
 
     private void checkAdminRole() {
-        var authUser = AuthUtils.getAuthenticatedUser();
+        var authUser = AuthUtils.getAuthenticatedUserDetails();
         if (authUser != null) {
             boolean isAdmin = authUser.getAuthorities().stream()
                     .map(auth -> UserRole.valueOf(auth.getAuthority()))
@@ -128,7 +128,7 @@ public class SubmitRequestService {
     }
 
     private void fillInAuthor(SubmitRequest request) {
-        var authUser = AuthUtils.getAuthenticatedUser();
+        var authUser = AuthUtils.getAuthenticatedUserDetails();
         if (authUser != null) {
             var user = userService.getByEmail(authUser.getUsername())
                     .orElseThrow(() ->

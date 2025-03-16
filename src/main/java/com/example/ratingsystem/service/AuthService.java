@@ -2,11 +2,17 @@ package com.example.ratingsystem.service;
 
 import com.example.ratingsystem.domain.entities.ConfirmEmailEntity;
 import com.example.ratingsystem.domain.entities.Email;
+import com.example.ratingsystem.domain.entities.User;
+import com.example.ratingsystem.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +59,13 @@ public class AuthService {
                 """ + token;
         var mail = new Email(email, "Confirmation link", emailText);
         emailSender.send(mail);
+    }
+
+    public boolean validateAuthenticatedUser(UUID id) {
+        var userDetails = AuthUtils.getAuthenticatedUserDetails();
+        Optional<User> authUser = userDetails != null
+                ? userService.getByEmail(userDetails.getUsername())
+                : Optional.empty();
+        return authUser.isPresent() && Objects.equals(authUser.get().getId(), id);
     }
 }

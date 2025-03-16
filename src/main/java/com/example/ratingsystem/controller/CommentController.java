@@ -1,7 +1,7 @@
 package com.example.ratingsystem.controller;
 
-import com.example.ratingsystem.domain.dtos.comment.CommentRequestDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
+import com.example.ratingsystem.domain.dtos.comment.CommentUpdateDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitCommentAndRegisterRequestDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.entities.Comment;
@@ -34,8 +34,9 @@ public class CommentController {
         return ResponseEntity.ok(mapper.toSubmitResponseDto(request));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CommentResponseDto> update(@PathVariable UUID id, @RequestBody @Validated CommentRequestDto dto) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<CommentResponseDto> update(@PathVariable UUID id,
+                                                     @RequestBody @Validated CommentUpdateDto dto) {
         dto.setId(id);
         var comment = commentService.update(mapper.fromUpdateDto(dto));
         return ResponseEntity.ok(toDto(comment));

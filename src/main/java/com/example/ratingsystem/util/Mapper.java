@@ -2,8 +2,10 @@ package com.example.ratingsystem.util;
 
 import com.example.ratingsystem.domain.dtos.comment.CommentRequestDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
+import com.example.ratingsystem.domain.dtos.comment.CommentUpdateDto;
 import com.example.ratingsystem.domain.dtos.game.GameRequestDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectRequestDto;
+import com.example.ratingsystem.domain.dtos.gameobject.GameObjectUpdateDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitCommentAndRegisterRequestDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.dtos.user.UserRequestDto;
@@ -45,15 +47,36 @@ public class Mapper {
         return object;
     }
 
-    public Comment fromUpdateDto(CommentRequestDto dto) {
+    public GameObject fromDto(GameObjectUpdateDto dto) {
+        GameObject object = gameObjectService.get(dto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(dto.getId()));
+
+        if (dto.getTitle() != null) {
+            object.setTitle(dto.getTitle());
+        }
+        if (dto.getText() != null) {
+            object.setText(dto.getText());
+        }
+        if (dto.getGameId() != null) {
+            var game = getGame(dto.getGameId());
+            object.setGame(game);
+        }
+        return object;
+    }
+
+    public Comment fromUpdateDto(CommentUpdateDto dto) {
         Comment comment = commentService.get(dto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(dto.getId()));
-        var seller = getUser(dto.getSellerId());
-        var author = getUserNullable(dto.getAuthorId());
-        comment.setSeller(seller);
-        comment.setAuthor(author);
-        comment.getDetails().setMessage(dto.getMessage());
-        comment.getDetails().setRating(dto.getRating());
+        if (dto.getRating() != null) {
+            comment.getDetails().setRating(dto.getRating());
+        }
+        if (dto.getMessage() != null) {
+            comment.getDetails().setMessage(dto.getMessage());
+        }
+        if (dto.getSellerId() != null) {
+            var seller = getUser(dto.getSellerId());
+            comment.setSeller(seller);
+        }
         return comment;
     }
 

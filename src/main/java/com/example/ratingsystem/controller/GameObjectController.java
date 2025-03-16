@@ -2,6 +2,7 @@ package com.example.ratingsystem.controller;
 
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectRequestDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectResponseDto;
+import com.example.ratingsystem.domain.dtos.gameobject.GameObjectUpdateDto;
 import com.example.ratingsystem.domain.entities.GameObject;
 import com.example.ratingsystem.service.GameObjectService;
 import com.example.ratingsystem.exception.EntityNotFoundException;
@@ -33,8 +34,9 @@ public class GameObjectController {
                 .body(toDto(object));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<GameObjectResponseDto> update(@PathVariable UUID id, @RequestBody @Valid GameObjectRequestDto dto) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<GameObjectResponseDto> update(@PathVariable UUID id,
+                                                        @RequestBody @Valid GameObjectUpdateDto dto) {
         dto.setId(id);
         var object = gameObjectService.update(mapper.fromDto(dto));
         return ResponseEntity.ok(toDto(object));
