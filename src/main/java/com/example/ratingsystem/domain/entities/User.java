@@ -23,6 +23,9 @@ public class User extends BasicEntity {
     @ColumnDefault("false")
     @NotNull
     private boolean isEnabled;
+    @NotNull
+    @ColumnDefault("0")
+    private double rating;
 
     @OneToOne(
             optional = false,

@@ -83,7 +83,7 @@ public class GameObjectController {
         if (gameId != null) {
             specs.add(SpecificationCriteria.equalsCriteria("game", "id", gameId));
         }
-        //specs.add(SpecificationCriteria.betweenCriteria("user", "rating", ratingFrom, ratingTo));
+        specs.add(SpecificationCriteria.betweenCriteria("user", "rating", ratingFrom, ratingTo));
         if (title != null) {
             specs.add(SpecificationCriteria.containsCriteria("title", title));
         }

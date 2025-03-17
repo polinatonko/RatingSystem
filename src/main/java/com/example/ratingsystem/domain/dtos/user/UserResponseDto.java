@@ -31,10 +31,6 @@ public class UserResponseDto {
         this(user.getDetails());
         this.id = user.getId();
         this.isEnabled = user.isEnabled();
-    }
-
-    public UserResponseDto(User user, double rating) {
-        this(user);
-        this.rating = rating;
+        this.rating = user.getRating();
     }
 }

@@ -44,8 +44,6 @@ public class UserController {
     }
 
     private UserResponseDto toDto(User user) {
-        var dto = new UserResponseDto(user);
-        dto.setRating(userService.calculateRating(user));
-        return dto;
+        return new UserResponseDto(user);
     }
 }

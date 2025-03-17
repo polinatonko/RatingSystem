@@ -1,8 +1,6 @@
 package com.example.ratingsystem.service.user;
 
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
-import com.example.ratingsystem.domain.entities.Comment;
-import com.example.ratingsystem.domain.entities.CommentDetails;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.domain.enums.UserRole;
 import com.example.ratingsystem.exception.EntityNotFoundException;
@@ -75,20 +73,10 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDto> getTopSellers(int count) {
         return userRepository.findByDetailsRole(UserRole.ROLE_SELLER)
                 .stream()
-                .map(user -> new UserResponseDto(user, calculateRating(user)))
+                .map(user -> new UserResponseDto(user))
                 .sorted(Comparator.comparingDouble(UserResponseDto::getRating))
                 .limit(count)
                 .toList();
-    }
-
-    @Override
-    public double calculateRating(User user) {
-        return commentRepository.findBySellerId(user.getId())
-                .stream()
-                .map(Comment::getDetails)
-                .mapToInt(CommentDetails::getRating)
-                .average()
-                .orElse(0);
     }
 
     @Override

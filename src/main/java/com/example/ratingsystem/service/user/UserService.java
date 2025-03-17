@@ -18,6 +18,5 @@ public interface UserService {
     void delete(UUID id);
     void updatePassword(String email, String password);
     List<UserResponseDto> getTopSellers(int count);
-    double calculateRating(User user);
     boolean validateAuthenticatedUser(UUID id);
 }

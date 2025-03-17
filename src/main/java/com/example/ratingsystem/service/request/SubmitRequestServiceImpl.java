@@ -121,13 +121,11 @@ public class SubmitRequestServiceImpl implements SubmitRequestService {
 
     private void checkAdminRole() {
         var authUser = AuthUtils.getAuthenticatedUserDetails();
-        if (authUser != null) {
-            boolean isAdmin = authUser.getAuthorities().stream()
-                    .map(auth -> UserRole.valueOf(auth.getAuthority()))
-                    .anyMatch(role -> role == UserRole.ROLE_ADMIN);
-            if (!isAdmin) {
-                throw new AccessDeniedException("Administrator's privileges required");
-            }
+        boolean isAdmin = authUser != null && authUser.getAuthorities().stream()
+                .map(auth -> UserRole.valueOf(auth.getAuthority()))
+                .anyMatch(role -> role == UserRole.ROLE_ADMIN);
+        if (!isAdmin) {
+            throw new AccessDeniedException("Administrator's privileges required");
         }
     }
 

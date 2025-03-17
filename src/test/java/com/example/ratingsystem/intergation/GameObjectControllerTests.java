@@ -50,7 +50,7 @@ class GameObjectControllerTests {
     private GameObject object;
 
     @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest")
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.4")
             .withUsername("test")
             .withPassword("test");
 
