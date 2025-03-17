@@ -9,11 +9,15 @@ import com.example.ratingsystem.domain.entities.GameObject;
 import com.example.ratingsystem.exception.InvalidRequestParamValueException;
 import com.example.ratingsystem.service.game.GameObjectService;
 import com.example.ratingsystem.exception.EntityNotFoundException;
+import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.Mapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -27,11 +31,16 @@ import java.util.UUID;
 @RequestMapping("/objects")
 @RequiredArgsConstructor
 public class GameObjectController {
+    private final UserService userService;
     private final GameObjectService gameObjectService;
     private final Mapper mapper;
 
     @PostMapping
-    public ResponseEntity<GameObjectResponseDto> createGameObject(@RequestBody @Valid GameObjectRequestDto dto) {
+    public ResponseEntity<GameObjectResponseDto> createGameObject(@AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid GameObjectRequestDto dto) {
+        var authUser = userService.getByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new AccessDeniedException("Only seller can POST new object"));
+        dto.setSellerId(authUser.getId());
         var object = gameObjectService.create(mapper.fromDto(dto));
         return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

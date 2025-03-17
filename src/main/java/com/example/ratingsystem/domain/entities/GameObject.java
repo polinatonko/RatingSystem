@@ -11,8 +11,6 @@ import java.util.UUID;
 @Table(name = "game_objects")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @EqualsAndHashCode(callSuper = true)
 public class GameObject extends BasicEntity {
     @Id
@@ -28,4 +26,11 @@ public class GameObject extends BasicEntity {
     private User user;
     @ManyToOne
     private Game game;
+
+    public GameObject(String title, String text, User user, Game game) {
+        this.title = title;
+        this.text = text;
+        this.user = user;
+        this.game = game;
+    }
 }

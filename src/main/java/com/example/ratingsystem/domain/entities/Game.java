@@ -14,8 +14,6 @@ import java.util.UUID;
 @Table(name = "games")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @EqualsAndHashCode(callSuper = true)
 public class Game extends BasicEntity {
     @Id
@@ -30,4 +28,9 @@ public class Game extends BasicEntity {
     @OneToMany(mappedBy = "game")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<GameObject> objects;
+
+    public Game(String title, String text) {
+        this.title = title;
+        this.text = text;
+    }
 }

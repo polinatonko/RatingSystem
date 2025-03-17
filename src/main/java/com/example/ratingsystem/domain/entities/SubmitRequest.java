@@ -23,7 +23,7 @@ public class SubmitRequest extends BasicEntity {
     private UUID id;
     @Enumerated(EnumType.STRING)
     @NotNull
-    @ColumnDefault("WAITING")
+    @ColumnDefault("'WAITING'")
     private RequestStatus status;
 
     @OneToOne(cascade = CascadeType.ALL)

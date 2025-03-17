@@ -13,7 +13,6 @@ public class GameObjectRequestDto {
     @NotNull
     private String title;
     private String text;
-    @NotNull
     private UUID sellerId;
     @NotNull
     private UUID gameId;

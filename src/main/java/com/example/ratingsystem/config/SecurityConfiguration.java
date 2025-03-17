@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                             .requestMatchers(HttpMethod.PUT, gamesEndpoints).hasRole("ADMIN")
                             .requestMatchers(HttpMethod.DELETE, gamesEndpoints).hasRole("ADMIN")
                             .requestMatchers("/requests/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST, "/objects").hasRole("SELLER")
                             .anyRequest().permitAll()
             )
                 .userDetailsService(userDetailsService)
