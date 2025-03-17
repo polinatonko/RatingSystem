@@ -1,7 +1,10 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.auth;
 
 import com.example.ratingsystem.domain.entities.Email;
 import com.example.ratingsystem.domain.entities.PasswordResetEntity;
+import com.example.ratingsystem.service.email.EmailSender;
+import com.example.ratingsystem.service.token.TokenService;
+import com.example.ratingsystem.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -12,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PasswordResetService {
+public class PasswordResetServiceImpl implements PasswordResetService {
     private final JwtService jwtService;
     private final TokenService<PasswordResetEntity, String> passwordResetEntityService;
     private final UserService userService;
@@ -20,6 +23,7 @@ public class PasswordResetService {
     private final EmailSender emailSender;
     private final PasswordEncoder passwordEncoder;
 
+    @Override
     public void sendPasswordResetEmail(String email) {
         var userDetails = userDetailsService.loadUserByUsername(email);
         checkUserDetailsStatus(userDetails);
@@ -37,6 +41,7 @@ public class PasswordResetService {
         emailSender.send(mail);
     }
 
+    @Override
     public void resetPassword(String token, String newPassword) {
         var username = jwtService.extractUsername(token);
         var userDetails = userDetailsService.loadUserByUsername(username);

@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

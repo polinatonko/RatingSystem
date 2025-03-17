@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.token;
 
 import com.example.ratingsystem.domain.entities.ConfirmEmailEntity;
 import com.example.ratingsystem.repository.ConfirmEmailRepository;

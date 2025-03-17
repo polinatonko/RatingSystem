@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.token;
 
 public interface TokenService<E, K> {
     void save(E entity);

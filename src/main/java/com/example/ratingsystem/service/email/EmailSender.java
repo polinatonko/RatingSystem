@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.email;
 
 import com.example.ratingsystem.domain.entities.Email;
 

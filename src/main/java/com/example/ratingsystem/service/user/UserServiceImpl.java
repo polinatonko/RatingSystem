@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.user;
 
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.domain.entities.Comment;
@@ -17,37 +17,45 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
 
+    @Override
     public User create(User user) {
         return userRepository.save(user);
     }
 
+    @Override
     public boolean exists(String email) {
         return userRepository.existsByDetailsEmail(email);
     }
 
+    @Override
     public Optional<User> get(UUID id) {
         return userRepository.findById(id);
     }
 
+    @Override
     public Optional<User> getByEmail(String email) { return userRepository.findByDetailsEmail(email); }
 
+    @Override
     public List<User> getAll() { return userRepository.findAll(); }
 
+    @Override
     public void enable(String email) {
         var user = findByEmailOrThrowException(email);
         user.setEnabled(true);
         userRepository.save(user);
     }
 
+    @Override
     public User update(User user) {
         validateUserAccess(user);
         return userRepository.save(user);
     }
 
+    @Override
     public void delete(UUID id) {
         userRepository.findById(id)
                 .ifPresent(user -> {
@@ -56,12 +64,14 @@ public class UserService {
                 });
     }
 
+    @Override
     public void updatePassword(String email, String password) {
         var user = findByEmailOrThrowException(email);
         user.getDetails().setPassword(password);
         userRepository.save(user);
     }
 
+    @Override
     public List<UserResponseDto> getTopSellers(int count) {
         return userRepository.findByDetailsRole(UserRole.ROLE_SELLER)
                 .stream()
@@ -71,6 +81,7 @@ public class UserService {
                 .toList();
     }
 
+    @Override
     public double calculateRating(User user) {
         return commentRepository.findBySellerId(user.getId())
                 .stream()
@@ -80,6 +91,7 @@ public class UserService {
                 .orElse(0);
     }
 
+    @Override
     public boolean validateAuthenticatedUser(UUID id) {
         var userDetails = AuthUtils.getAuthenticatedUserDetails();
         Optional<User> authUser = userDetails != null

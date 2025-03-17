@@ -3,6 +3,7 @@ package com.example.ratingsystem.domain.entities;
 import com.example.ratingsystem.domain.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Table(name = "user_details")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

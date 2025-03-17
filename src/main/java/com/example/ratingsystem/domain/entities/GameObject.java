@@ -2,9 +2,7 @@ package com.example.ratingsystem.domain.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.UUID;
@@ -13,6 +11,8 @@ import java.util.UUID;
 @Table(name = "game_objects")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EqualsAndHashCode(callSuper = true)
 public class GameObject extends BasicEntity {
     @Id

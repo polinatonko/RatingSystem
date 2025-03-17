@@ -4,7 +4,7 @@ import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.domain.dtos.user.UserUpdateDto;
 import com.example.ratingsystem.domain.entities.User;
-import com.example.ratingsystem.service.UserService;
+import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.Mapper;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

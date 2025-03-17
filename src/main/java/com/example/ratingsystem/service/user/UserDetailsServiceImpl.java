@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.user;
 
 import com.example.ratingsystem.domain.entities.UserDetailsImpl;
 import com.example.ratingsystem.exception.EntityNotFoundException;

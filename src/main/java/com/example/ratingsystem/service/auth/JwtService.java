@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 

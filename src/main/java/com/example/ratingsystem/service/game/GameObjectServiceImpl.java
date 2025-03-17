@@ -1,9 +1,10 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.game;
 
 import com.example.ratingsystem.domain.dtos.specification.SpecificationCriteria;
 import com.example.ratingsystem.domain.entities.GameObject;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.repository.GameObjectRepository;
+import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.service.specification.SpecificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,20 +17,23 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class GameObjectService {
+public class GameObjectServiceImpl implements GameObjectService {
     private final SpecificationService<Object> specificationService;
     private final UserService userService;
     private final GameObjectRepository gameObjectRepository;
 
+    @Override
     public GameObject create(GameObject object) {
         return gameObjectRepository.save(object);
     }
 
+    @Override
     public GameObject update(GameObject object) {
         validateSellerAccess(object.getUser());
         return gameObjectRepository.save(object);
     }
 
+    @Override
     public void delete(UUID id) {
         gameObjectRepository.findById(id)
                 .ifPresent(object -> {
@@ -38,18 +42,22 @@ public class GameObjectService {
                 });
     }
 
+    @Override
     public Optional<GameObject> get(UUID id) {
         return id == null ? Optional.empty() : gameObjectRepository.findById(id);
     }
 
+    @Override
     public List<GameObject> getByGameId(UUID id) {
         return gameObjectRepository.findByGameId(id);
     }
 
+    @Override
     public List<GameObject> getByUserId(UUID id) {
         return gameObjectRepository.findByUserId(id);
     }
 
+    @Override
     public List<GameObject> getAll(List<SpecificationCriteria<Object>> specs) {
         return gameObjectRepository.findAll(Specification.allOf(specs.stream()
                 .map(specificationService::getSpecification)

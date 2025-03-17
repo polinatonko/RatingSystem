@@ -1,7 +1,10 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.auth;
 
 import com.example.ratingsystem.domain.entities.ConfirmEmailEntity;
 import com.example.ratingsystem.domain.entities.Email;
+import com.example.ratingsystem.service.token.ConfirmEmailEntityService;
+import com.example.ratingsystem.service.user.UserService;
+import com.example.ratingsystem.service.email.EmailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -11,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthServiceImpl implements AuthService {
     private final ConfirmEmailEntityService confirmEmailService;
     private final JwtService jwtService;
     private final UserService userService;
@@ -19,6 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailSender emailSender;
 
+    @Override
     public String login(String email, String password) {
         var userDetails = userDetailsService.loadUserByUsername(email);
         if (!userDetails.isEnabled()) {
@@ -32,17 +36,20 @@ public class AuthService {
         return token;
     }
 
+    @Override
     public boolean isTokenValid(String token) {
         var username = jwtService.extractUsername(token);
         return confirmEmailService.isValid(username, token);
     }
 
+    @Override
     public void confirmSignup(String token) {
         var email = jwtService.extractUsername(token);
         confirmEmailService.delete(email);
         userService.enable(email);
     }
 
+    @Override
     public void sendConfirmationEmail(String email) {
         var userDetails = userDetailsService.loadUserByUsername(email);
         var token = jwtService.generateToken(userDetails);

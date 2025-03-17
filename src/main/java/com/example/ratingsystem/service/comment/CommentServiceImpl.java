@@ -1,8 +1,9 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.comment;
 
 import com.example.ratingsystem.domain.entities.Comment;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.repository.CommentRepository;
+import com.example.ratingsystem.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -13,19 +14,22 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CommentService {
+public class CommentServiceImpl implements CommentService {
     private final UserService userService;
     private final CommentRepository commentRepository;
 
+    @Override
     public Comment create(Comment comment) {
         return commentRepository.save(comment);
     }
 
+    @Override
     public Comment update(Comment comment) {
         validateAuthorAccess(comment.getAuthor());
         return commentRepository.save(comment);
     }
 
+    @Override
     public void delete(UUID id) {
         commentRepository.findById(id)
                 .ifPresent(comment -> {
@@ -34,10 +38,12 @@ public class CommentService {
                 });
     }
 
+    @Override
     public Optional<Comment> get(UUID id) {
         return commentRepository.findById(id);
     }
 
+    @Override
     public List<Comment> getBySellerId(UUID sellerId) {
         return commentRepository.findBySellerId(sellerId);
     }

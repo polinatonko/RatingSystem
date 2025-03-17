@@ -1,4 +1,4 @@
-package com.example.ratingsystem.service;
+package com.example.ratingsystem.service.request;
 
 import com.example.ratingsystem.domain.entities.*;
 import com.example.ratingsystem.domain.enums.RequestStatus;
@@ -6,6 +6,9 @@ import com.example.ratingsystem.domain.enums.UserRole;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.exception.UniqueConstraintViolationException;
 import com.example.ratingsystem.repository.SubmitRequestRepository;
+import com.example.ratingsystem.service.auth.AuthService;
+import com.example.ratingsystem.service.comment.CommentService;
+import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.AuthUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +23,21 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class SubmitRequestService {
+public class SubmitRequestServiceImpl implements SubmitRequestService {
     private final AuthService authService;
     private final CommentService commentService;
     private final UserService userService;
     private final SubmitRequestRepository requestRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Override
     public SubmitRequest createCommentRequest(SubmitRequest request) {
         validateSeller(request.getSeller());
         fillInAuthor(request);
         return updateStatusAndSave(request, RequestStatus.WAITING);
     }
 
+    @Override
     public SubmitRequest createRegistrationRequest(SubmitRequest request) {
         var userDetails= request.getUserDetails();
         if (userDetails.getRole() == UserRole.ROLE_ADMIN) {
@@ -48,14 +53,17 @@ public class SubmitRequestService {
         return updateStatusAndSave(request, RequestStatus.WAITING);
     }
 
+    @Override
     public Optional<SubmitRequest> get(UUID id) {
         return requestRepository.findById(id);
     }
 
+    @Override
     public List<SubmitRequest> getByStatus(RequestStatus status) {
         return status != null ? requestRepository.findByStatus(status) : requestRepository.findAll();
     }
 
+    @Override
     public SubmitRequest approve(UUID id) {
         var request = getRequest(id);
         if (request.isProcessed()) {
@@ -81,6 +89,7 @@ public class SubmitRequestService {
         return updateStatusAndSave(request, RequestStatus.APPROVED);
     }
 
+    @Override
     public SubmitRequest reject(UUID id) {
         var request = getRequest(id);
         return request.isProcessed() ? request : updateStatusAndSave(request, RequestStatus.REJECTED);

@@ -2,7 +2,8 @@ package com.example.ratingsystem.controller;
 
 import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.auth.*;
-import com.example.ratingsystem.service.*;
+import com.example.ratingsystem.service.auth.AuthService;
+import com.example.ratingsystem.service.auth.PasswordResetService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
