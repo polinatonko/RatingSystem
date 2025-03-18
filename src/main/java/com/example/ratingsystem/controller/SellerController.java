@@ -1,9 +1,11 @@
 package com.example.ratingsystem.controller;
 
 import com.example.ratingsystem.aspect.Loggable;
+import com.example.ratingsystem.domain.dtos.pagination.PageRequestDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentRequestDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
 import com.example.ratingsystem.domain.dtos.gameobject.GameObjectResponseDto;
+import com.example.ratingsystem.domain.dtos.pagination.PageResponseDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.service.comment.CommentService;
@@ -11,6 +13,7 @@ import com.example.ratingsystem.service.game.GameObjectService;
 import com.example.ratingsystem.service.request.SubmitRequestService;
 import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.Mapper;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,12 +45,15 @@ public class SellerController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<List<CommentResponseDto>> getSellerComments(@PathVariable UUID id) {
-        var comments = commentService.getBySellerId(id)
-                .stream()
-                .map(CommentResponseDto::new)
-                .toList();
-        return ResponseEntity.ok(comments);
+    public ResponseEntity<PageResponseDto<CommentResponseDto>> getSellerComments(@PathVariable UUID id,
+                                                                                 @RequestParam(required = false) @Min(1) Integer pageNo,
+                                                                                 @RequestParam(required = false) @Min(1) Integer pageSize,
+                                                                                 @RequestParam(required = false) String sortDirection,
+                                                                                 @RequestParam(required = false) String sortBy) {
+        var pageRequest = new PageRequestDto(pageNo, pageSize, sortDirection, sortBy);
+        var page = commentService.getBySellerId(id, pageRequest);
+        var result = PageResponseDto.from(page, CommentResponseDto::new);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}/objects")

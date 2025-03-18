@@ -4,7 +4,6 @@ import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.domain.enums.UserRole;
 import com.example.ratingsystem.exception.EntityNotFoundException;
-import com.example.ratingsystem.repository.CommentRepository;
 import com.example.ratingsystem.repository.UserRepository;
 import com.example.ratingsystem.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
 
     @Override
     public User create(User user) {
@@ -31,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> get(UUID id) {
-        return userRepository.findById(id);
+        return id != null ? userRepository.findById(id) : Optional.empty();
     }
 
     @Override
@@ -73,8 +71,8 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDto> getTopSellers(int count) {
         return userRepository.findByDetailsRole(UserRole.ROLE_SELLER)
                 .stream()
-                .map(user -> new UserResponseDto(user))
-                .sorted(Comparator.comparingDouble(UserResponseDto::getRating))
+                .map(UserResponseDto::new)
+                .sorted(Comparator.comparingDouble(UserResponseDto::getRating).reversed())
                 .limit(count)
                 .toList();
     }

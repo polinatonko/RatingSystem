@@ -3,6 +3,8 @@ package com.example.ratingsystem.controller;
 import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.comment.CommentResponseDto;
 import com.example.ratingsystem.domain.dtos.comment.CommentUpdateDto;
+import com.example.ratingsystem.domain.dtos.pagination.PageRequestDto;
+import com.example.ratingsystem.domain.dtos.pagination.PageResponseDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitCommentAndRegisterRequestDto;
 import com.example.ratingsystem.domain.dtos.submitrequest.SubmitResponseDto;
 import com.example.ratingsystem.domain.entities.Comment;
@@ -11,6 +13,7 @@ import com.example.ratingsystem.service.request.SubmitRequestService;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.util.Mapper;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +60,17 @@ public class CommentController {
                 .map(this::toDto)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new EntityNotFoundException(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponseDto<CommentResponseDto>> getAll(@RequestParam(required = false) @Min(1) Integer pageNo,
+                                                                      @RequestParam(required = false) @Min(1) Integer pageSize,
+                                                                      @RequestParam(required = false) String sortDirection,
+                                                                      @RequestParam(required = false) String sortBy) {
+        var pageRequest = new PageRequestDto(pageNo, pageSize, sortDirection, sortBy);
+        var page = commentService.getAll(pageRequest);
+        var result = PageResponseDto.from(page, CommentResponseDto::new);
+        return ResponseEntity.ok(result);
     }
 
     private CommentResponseDto toDto(Comment comment) {

@@ -2,7 +2,7 @@ package com.example.ratingsystem.service.game;
 
 import com.example.ratingsystem.domain.entities.Game;
 import com.example.ratingsystem.repository.GameRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GameServiceImpl implements GameService {
-    private GameRepository gameRepository;
+    private final GameRepository gameRepository;
 
     @Override
     public Game create(Game game) {

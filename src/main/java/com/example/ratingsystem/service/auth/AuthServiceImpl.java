@@ -5,6 +5,7 @@ import com.example.ratingsystem.domain.entities.Email;
 import com.example.ratingsystem.service.token.ConfirmEmailEntityService;
 import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.service.email.EmailSender;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -43,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void confirmSignup(String token) {
         var email = jwtService.extractUsername(token);
         confirmEmailService.delete(email);

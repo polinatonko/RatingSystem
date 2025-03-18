@@ -1,14 +1,15 @@
 package com.example.ratingsystem.service.comment;
 
+import com.example.ratingsystem.domain.dtos.pagination.PageRequestDto;
 import com.example.ratingsystem.domain.entities.Comment;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.repository.CommentRepository;
 import com.example.ratingsystem.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,12 +41,17 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Optional<Comment> get(UUID id) {
-        return commentRepository.findById(id);
+        return id != null ? commentRepository.findById(id) : Optional.empty();
     }
 
     @Override
-    public List<Comment> getBySellerId(UUID sellerId) {
-        return commentRepository.findBySellerId(sellerId);
+    public Page<Comment> getBySellerId(UUID sellerId, PageRequestDto pageRequest) {
+        return commentRepository.findBySellerId(sellerId, pageRequest.getPageable());
+    }
+
+    @Override
+    public Page<Comment> getAll(PageRequestDto pageRequestDto) {
+        return commentRepository.findAll(pageRequestDto.getPageable());
     }
 
     private void validateAuthorAccess(User author) {

@@ -5,6 +5,7 @@ import com.example.ratingsystem.domain.entities.PasswordResetEntity;
 import com.example.ratingsystem.service.email.EmailSender;
 import com.example.ratingsystem.service.token.TokenService;
 import com.example.ratingsystem.service.user.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -56,6 +57,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         userService.updatePassword(email, encodedPassword);
     }
 
+    @Transactional
     private void saveNewToken(String email, String token) {
         var passwordResetEntity = new PasswordResetEntity(email, token);
         passwordResetEntityService.delete(email);

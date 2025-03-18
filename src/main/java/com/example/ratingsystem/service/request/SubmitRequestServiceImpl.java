@@ -22,7 +22,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class SubmitRequestServiceImpl implements SubmitRequestService {
     private final AuthService authService;
     private final CommentService commentService;
@@ -64,6 +63,7 @@ public class SubmitRequestServiceImpl implements SubmitRequestService {
     }
 
     @Override
+    @Transactional
     public SubmitRequest approve(UUID id) {
         var request = getRequest(id);
         if (request.isProcessed()) {
