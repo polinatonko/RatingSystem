@@ -1,0 +1,16 @@
+applications:
+  - name: ratingsystem
+    random-route: true
+    path: ./target/ratingsystem-0.0.1-SNAPSHOT.jar
+    memory: 1024M
+    builbpacks:
+      - sap_java_buildpack_jakarta
+    env:
+      SPRING_PROFILES_ACTIVE: cloud
+      TARGET_RUNTIME: tomcat
+      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jdk.SAPMachineJDK']"
+      JBP_CONFIG_SAP_MACHINE_JDK: "{ version: 21.+ }"
+
+    services:
+      - postgres
+      - redis
