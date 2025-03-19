@@ -34,9 +34,13 @@ public class Mapper {
     private final CommentService commentService;
 
     public Game fromDto(GameRequestDto dto) {
-        Game game = gameService.get(dto.getId()).orElse(new Game());
-        game.setTitle(dto.getTitle());
-        game.setText(dto.getText());
+        Game game = gameService.get(dto.getId()).orElseThrow(() -> new EntityNotFoundException(dto.getId()));
+        if (dto.getTitle() != null) {
+            game.setTitle(dto.getTitle());
+        }
+        if (dto.getText() != null) {
+            game.setText(dto.getText());
+        }
         return game;
     }
 

@@ -63,8 +63,7 @@ public class SellerController {
                                                                                  @RequestParam(required = false) String sortBy) {
         var pageRequest = new PageRequestDto(pageNo, pageSize, sortDirection, sortBy);
         var page = commentService.getBySellerId(id, pageRequest);
-        var result = PageResponseDto.from(page, CommentResponseDto::new);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(PageResponseDto.from(page, CommentResponseDto::new));
     }
 
     @GetMapping("/{id}/objects")

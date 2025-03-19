@@ -20,7 +20,6 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +39,7 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Request was submitted", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Invalid body"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
             @ApiResponse(responseCode = "403", description = "Declined attempt to create admin")
     })
     public ResponseEntity<SubmitResponseDto> submitAndRegister(
@@ -54,6 +54,7 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Comment was updated", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
             @ApiResponse(responseCode = "403", description = "Declined attempt to update comment")
     })
     public ResponseEntity<CommentResponseDto> update(@PathVariable UUID id,
@@ -66,6 +67,11 @@ public class CommentController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete comment via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Comment doesn't exists or was deleted"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Declined attempt to delete comment")
+    })
     public void delete(@PathVariable UUID id) {
         commentService.delete(id);
     }
@@ -97,8 +103,7 @@ public class CommentController {
                                                                       @RequestParam(required = false) String sortBy) {
         var pageRequest = new PageRequestDto(pageNo, pageSize, sortDirection, sortBy);
         var page = commentService.getAll(pageRequest);
-        var result = PageResponseDto.from(page, CommentResponseDto::new);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(PageResponseDto.from(page, CommentResponseDto::new));
     }
 
     private CommentResponseDto toDto(Comment comment) {

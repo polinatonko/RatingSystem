@@ -5,6 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+/**
+ * Dto for storing data about pagination in request.
+ */
 @Data
 public class PageRequestDto {
     private int pageNo;

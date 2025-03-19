@@ -35,7 +35,8 @@ public class GameController {
     @Operation(summary = "Create game")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Game was created", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Invalid body")
+            @ApiResponse(responseCode = "400", description = "Invalid body"),
+            @ApiResponse(responseCode = "403", description = "Administrator's privileges required")
     })
     public ResponseEntity<GameResponseDto> create(@RequestBody @Valid GameRequestDto dto) {
         var game = gameService.create(mapper.fromDto(dto));
@@ -46,11 +47,12 @@ public class GameController {
                 .body(toDto(game));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @Operation(summary = "Partial update game")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Game was updated", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable")
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "403", description = "Administrator's privileges required")
     })
     public ResponseEntity<GameResponseDto> update(@PathVariable UUID id, @RequestBody @Valid GameRequestDto dto) {
         dto.setId(id);
@@ -61,6 +63,10 @@ public class GameController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete game via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Game was deleted or doesn't exist"),
+            @ApiResponse(responseCode = "403", description = "Administrator's privileges required")
+    })
     public void delete(@PathVariable UUID id) {
         gameService.delete(id);
     }

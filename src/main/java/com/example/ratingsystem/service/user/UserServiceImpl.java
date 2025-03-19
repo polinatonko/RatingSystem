@@ -7,6 +7,7 @@ import com.example.ratingsystem.repository.UserRepository;
 import com.example.ratingsystem.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -78,9 +79,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean validateAuthenticatedUser(UUID id) {
         var userDetails = AuthUtils.getAuthenticatedUserDetails();
-        Optional<User> authUser = userDetails != null
-                ? userRepository.findByDetailsEmail(userDetails.getUsername())
-                : Optional.empty();
+        if (userDetails == null) {
+            throw new AuthenticationCredentialsNotFoundException("Authentication required");
+        }
+        Optional<User> authUser = userRepository.findByDetailsEmail(userDetails.getUsername());
         return authUser.isPresent() && Objects.equals(authUser.get().getId(), id);
     }
 

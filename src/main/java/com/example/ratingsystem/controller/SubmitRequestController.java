@@ -11,7 +11,6 @@ import com.example.ratingsystem.util.Mapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +31,7 @@ public class SubmitRequestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Status was changed", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "403", description = "Administrator's privileges required"),
             @ApiResponse(responseCode = "404", description = "Request not found")
     })
     public ResponseEntity<SubmitResponseDto> updateStatus(@PathVariable UUID id, @RequestBody RequestStatusDto statusDto) {
@@ -48,9 +48,10 @@ public class SubmitRequestController {
     @Operation(summary = "Get all request via status")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of requests with specific status", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Invalid path parameter value")
+            @ApiResponse(responseCode = "400", description = "Invalid request parameter value"),
+            @ApiResponse(responseCode = "403", description = "Administrator's privileges required"),
     })
-    public ResponseEntity<List<SubmitResponseDto>> get(@PathParam("status") String status) {
+    public ResponseEntity<List<SubmitResponseDto>> get(@RequestParam(value = "status", required = false) String status) {
         var statusEnum = RequestStatus.findByName(status);
         if (status != null && statusEnum == null) {
             throw new InvalidRequestParamValueException(

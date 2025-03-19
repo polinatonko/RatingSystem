@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
@@ -38,7 +40,9 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler({HttpMessageNotReadableException.class,
             InvalidRequestBodyException.class,
-            InvalidRequestParamValueException.class})
+            InvalidRequestParamValueException.class,
+            HandlerMethodValidationException.class
+    })
     public ResponseEntity<ApiError> handleBadRequestExceptions(Exception ex) {
         var error = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return ResponseEntity.badRequest().body(error);
@@ -60,5 +64,11 @@ public class DefaultExceptionHandler {
     public ResponseEntity<ApiError> handleDisabledException(Exception ex) {
         var error = new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex) {
+        var error = new ApiError(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 }

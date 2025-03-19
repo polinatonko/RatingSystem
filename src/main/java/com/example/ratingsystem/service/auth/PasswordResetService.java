@@ -18,4 +18,12 @@ public interface PasswordResetService {
      * @param newPassword new password value
      */
     void resetPassword(String token, String newPassword);
+
+    /**
+     * Finds out if the provided token is valid.
+     *
+     * @param token token to check
+     * @return {@code true} if the token is valid
+     */
+    boolean isValid(String token);
 }

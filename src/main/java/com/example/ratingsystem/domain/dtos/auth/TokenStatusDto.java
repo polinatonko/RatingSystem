@@ -1,5 +1,16 @@
 package com.example.ratingsystem.domain.dtos.auth;
 
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-public record TokenStatusDto(@NotNull String token) {}
+@Data
+@AllArgsConstructor
+public class TokenStatusDto {
+    private static final String VALID = "VALID";
+    private static final String INVALID = "INVALID";
+    private String status;
+
+    public TokenStatusDto(boolean isValid) {
+        this.status = isValid ? VALID : INVALID;
+    }
+}

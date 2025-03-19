@@ -4,6 +4,7 @@ import com.example.ratingsystem.aspect.Loggable;
 import com.example.ratingsystem.domain.dtos.user.UserResponseDto;
 import com.example.ratingsystem.domain.dtos.user.UserUpdateDto;
 import com.example.ratingsystem.domain.entities.User;
+import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.Mapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,11 +35,25 @@ public class UserController {
         return ResponseEntity.ok(users.stream().map(this::toDto).toList());
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Get user via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User with provided id", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable UUID id) {
+        var user = userService.get(id)
+                .map(this::toDto)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+        return ResponseEntity.ok(user);
+    }
+
     @PatchMapping("/{id}")
     @Operation(summary = "Partial update of the user details")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User was updated", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
             @ApiResponse(responseCode = "403", description = "Lack of privileges"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })

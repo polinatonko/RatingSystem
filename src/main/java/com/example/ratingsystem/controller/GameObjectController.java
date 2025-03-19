@@ -61,7 +61,9 @@ public class GameObjectController {
     @Operation(summary = "Partial update of the object")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Game object was updated", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable")
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Lack of privileges")
     })
     public ResponseEntity<GameObjectResponseDto> update(@PathVariable UUID id,
                                                         @RequestBody @Valid GameObjectUpdateDto dto) {
@@ -73,6 +75,11 @@ public class GameObjectController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete game object via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Game object was deleted or doesn't exist"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Lack of privileges")
+    })
     public void delete(@PathVariable UUID id) {
         gameObjectService.delete(id);
     }

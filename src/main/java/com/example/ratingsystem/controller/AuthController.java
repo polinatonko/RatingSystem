@@ -26,7 +26,8 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful login", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Invalid body"),
-            @ApiResponse(responseCode = "401", description = "Bad credentials") // check
+            @ApiResponse(responseCode = "401", description = "Bad credentials"),
+            @ApiResponse(responseCode = "404", description = "User not found")
     })
     public ResponseEntity<TokenDto> login(@RequestBody @NotNull @Valid AuthRequestDto dto) {
         var token = authService.login(dto.email(), dto.password());
@@ -49,7 +50,8 @@ public class AuthController {
     @Operation(summary = "Reset password using code")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Password was reset", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Invalid body")
+            @ApiResponse(responseCode = "400", description = "Invalid body"),
+            @ApiResponse(responseCode = "500", description = "Invalid token")
     })
     public ResponseEntity<MessageResponseDto> resetPassword(@RequestBody @NotNull @Valid ResetPasswordDto dto) {
         passwordResetService.resetPassword(dto.token(), dto.newPassword());
@@ -57,12 +59,22 @@ public class AuthController {
     }
 
     @GetMapping("/check_code")
-    @Operation(summary = "Check whether status of token is valid or invalid")
+    @Operation(summary = "Check whether status of confirmation token is valid or invalid")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Status was sent", useReturnTypeSchema = true)
     })
-    public ResponseEntity<TokenStatusDto> checkToken(@RequestBody @NotNull @Valid TokenStatusDto dto) {
-        var status = authService.isTokenValid(dto.token()) ? "VALID" : "INVALID";
+    public ResponseEntity<TokenStatusDto> checkToken(@RequestBody @NotNull @Valid TokenDto dto) {
+        var status = authService.isTokenValid(dto.token());
+        return ResponseEntity.ok(new TokenStatusDto(status));
+    }
+
+    @GetMapping("/check_code/password")
+    @Operation(summary = "Check whether status of password reset token is valid or invalid")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Status was sent", useReturnTypeSchema = true)
+    })
+    public ResponseEntity<TokenStatusDto> checkPasswordResetToken(@RequestBody @NotNull @Valid TokenDto dto) {
+        var status = passwordResetService.isValid(dto.token());
         return ResponseEntity.ok(new TokenStatusDto(status));
     }
 

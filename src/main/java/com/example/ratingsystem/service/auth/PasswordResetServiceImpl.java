@@ -43,6 +43,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
+    @Transactional
     public void resetPassword(String token, String newPassword) {
         var username = jwtService.extractUsername(token);
         var userDetails = userDetailsService.loadUserByUsername(username);
@@ -54,7 +55,19 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
         var encodedPassword = passwordEncoder.encode(newPassword);
         var email = userDetails.getUsername();
+        passwordResetEntityService.delete(email);
         userService.updatePassword(email, encodedPassword);
+    }
+
+    @Override
+    public boolean isValid(String token) {
+        try {
+            var email = jwtService.extractUsername(token);
+            return passwordResetEntityService.isValid(email, token);
+        }
+        catch (Exception ex) {
+            return false;
+        }
     }
 
     @Transactional

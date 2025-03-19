@@ -3,6 +3,7 @@ package com.example.ratingsystem.service.auth;
 import com.example.ratingsystem.domain.entities.ConfirmEmailEntity;
 import com.example.ratingsystem.domain.entities.Email;
 import com.example.ratingsystem.service.token.ConfirmEmailEntityService;
+import com.example.ratingsystem.service.token.PasswordResetEntityService;
 import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.service.email.EmailSender;
 import jakarta.transaction.Transactional;
@@ -39,8 +40,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean isTokenValid(String token) {
-        var username = jwtService.extractUsername(token);
-        return confirmEmailService.isValid(username, token);
+        try {
+            var username = jwtService.extractUsername(token);
+            return confirmEmailService.isValid(username, token);
+        }
+        catch (Exception ex) {
+            return false;
+        }
     }
 
     @Override

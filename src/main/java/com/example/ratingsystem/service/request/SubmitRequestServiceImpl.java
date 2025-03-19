@@ -13,6 +13,7 @@ import com.example.ratingsystem.util.AuthUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -121,7 +122,10 @@ public class SubmitRequestServiceImpl implements SubmitRequestService {
 
     private void checkAdminRole() {
         var authUser = AuthUtils.getAuthenticatedUserDetails();
-        boolean isAdmin = authUser != null && authUser.getAuthorities().stream()
+        if (authUser == null) {
+            throw new AuthenticationCredentialsNotFoundException("Authorize to create admin");
+        }
+        boolean isAdmin = authUser.getAuthorities().stream()
                 .map(auth -> UserRole.valueOf(auth.getAuthority()))
                 .anyMatch(role -> role == UserRole.ROLE_ADMIN);
         if (!isAdmin) {

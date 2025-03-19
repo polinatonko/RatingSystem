@@ -87,7 +87,7 @@ class GameObjectControllerTests {
         mockMvc.perform(patch("/objects/" + object.getId())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(dto)))
-            .andExpect(status().isForbidden());
+            .andExpect(status().isUnauthorized());
     }
 
     @Test

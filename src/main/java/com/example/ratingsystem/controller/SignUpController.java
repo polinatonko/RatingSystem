@@ -44,6 +44,7 @@ public class SignUpController {
     @Operation(summary = "Confirm email after successful registration")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Email was confirmed"),
+            @ApiResponse(responseCode = "409", description = "User with provided email already exist"),
             @ApiResponse(responseCode = "500", description = "Invalid token")
     })
     public ResponseEntity<MessageResponseDto> confirmSignup(@RequestBody @NotNull @Valid TokenDto dto) {
