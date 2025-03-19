@@ -12,11 +12,15 @@ import com.example.ratingsystem.service.comment.CommentService;
 import com.example.ratingsystem.service.request.SubmitRequestService;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +36,12 @@ public class CommentController {
     private final Mapper mapper;
 
     @PostMapping
+    @Operation(summary = "Submit request for comment and user creation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Request was submitted", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid body"),
+            @ApiResponse(responseCode = "403", description = "Declined attempt to create admin")
+    })
     public ResponseEntity<SubmitResponseDto> submitAndRegister(
             @RequestBody @Valid SubmitCommentAndRegisterRequestDto dto
     ) {
@@ -40,6 +50,12 @@ public class CommentController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update comment via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Comment was updated", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "403", description = "Declined attempt to update comment")
+    })
     public ResponseEntity<CommentResponseDto> update(@PathVariable UUID id,
                                                      @RequestBody @Validated CommentUpdateDto dto) {
         dto.setId(id);
@@ -49,11 +65,18 @@ public class CommentController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete comment via id")
     public void delete(@PathVariable UUID id) {
         commentService.delete(id);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get comment via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Comment was founded", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of path variable"),
+            @ApiResponse(responseCode = "404", description = "Comment wasn't found")
+    })
     public ResponseEntity<CommentResponseDto> get(@PathVariable UUID id) {
         var comment = commentService.get(id);
         return comment
@@ -63,6 +86,11 @@ public class CommentController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all comments with sorting and pagination")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Comments returned", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of request parameter")
+    })
     public ResponseEntity<PageResponseDto<CommentResponseDto>> getAll(@RequestParam(required = false) @Min(1) Integer pageNo,
                                                                       @RequestParam(required = false) @Min(1) Integer pageSize,
                                                                       @RequestParam(required = false) String sortDirection,

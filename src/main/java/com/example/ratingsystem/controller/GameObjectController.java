@@ -11,6 +11,9 @@ import com.example.ratingsystem.service.game.GameObjectService;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +39,12 @@ public class GameObjectController {
     private final Mapper mapper;
 
     @PostMapping
+    @Operation(summary = "Create game object")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Game object was created", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid body"),
+            @ApiResponse(responseCode = "403", description = "Declined attempt to create object by no-seller")
+    })
     public ResponseEntity<GameObjectResponseDto> createGameObject(@AuthenticationPrincipal UserDetails userDetails,
             @RequestBody @Valid GameObjectRequestDto dto) {
         var authUser = userService.getByEmail(userDetails.getUsername())
@@ -49,6 +58,11 @@ public class GameObjectController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Partial update of the object")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Game object was updated", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable")
+    })
     public ResponseEntity<GameObjectResponseDto> update(@PathVariable UUID id,
                                                         @RequestBody @Valid GameObjectUpdateDto dto) {
         dto.setId(id);
@@ -58,11 +72,18 @@ public class GameObjectController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete game object via id")
     public void delete(@PathVariable UUID id) {
         gameObjectService.delete(id);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get game object via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Game object was founded", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of path variable"),
+            @ApiResponse(responseCode = "404", description = "Game object wasn't found")
+    })
     public ResponseEntity<GameObjectResponseDto> get(@PathVariable UUID id) {
         var object = gameObjectService.get(id);
         return object
@@ -72,6 +93,11 @@ public class GameObjectController {
     }
 
     @GetMapping
+    @Operation(summary = "Get game object by criteria")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of filtered objects", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of request parameter")
+    })
     public ResponseEntity<List<GameObjectResponseDto>> get(@RequestParam(required = false) UUID gameId,
                                                            @RequestParam(required = false, defaultValue = "1") double ratingFrom,
                                                            @RequestParam(required = false, defaultValue = "5") double ratingTo,

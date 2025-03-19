@@ -22,6 +22,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * Class for converting dtos to entities and vice versa.
+ */
 @Service
 @RequiredArgsConstructor
 public class Mapper {

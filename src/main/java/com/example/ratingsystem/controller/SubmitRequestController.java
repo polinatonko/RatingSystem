@@ -8,6 +8,9 @@ import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.exception.InvalidRequestParamValueException;
 import com.example.ratingsystem.service.request.SubmitRequestService;
 import com.example.ratingsystem.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,12 @@ public class SubmitRequestController {
     private final Mapper mapper;
 
     @PostMapping("/{id}")
+    @Operation(summary = "Update status of the request via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Status was changed", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "404", description = "Request not found")
+    })
     public ResponseEntity<SubmitResponseDto> updateStatus(@PathVariable UUID id, @RequestBody RequestStatusDto statusDto) {
         var status = RequestStatus.valueOf(statusDto.status());
         var submitRequest = switch (status) {
@@ -36,6 +45,11 @@ public class SubmitRequestController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all request via status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of requests with specific status", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid path parameter value")
+    })
     public ResponseEntity<List<SubmitResponseDto>> get(@PathParam("status") String status) {
         var statusEnum = RequestStatus.findByName(status);
         if (status != null && statusEnum == null) {

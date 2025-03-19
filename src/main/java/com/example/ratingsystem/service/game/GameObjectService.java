@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service that provides CRUD-operations for managing {@link GameObject} objects.
+ */
 public interface GameObjectService {
     GameObject create(GameObject object);
     GameObject update(GameObject object);

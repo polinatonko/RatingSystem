@@ -19,7 +19,7 @@ public class OpenApiConfiguration {
         };
     }
 
-    private Schema getSchema(Class<?> schemaClass) {
+    private Schema<?> getSchema(Class<?> schemaClass) {
         var schema = ModelConverters.getInstance()
                 .read(schemaClass).get(schemaClass.getSimpleName());
         if (schema == null) {
@@ -28,11 +28,14 @@ public class OpenApiConfiguration {
         return schema;
     }
 
-    private void customizePathItem(PathItem pathItem, Schema schema) {
+    private void customizePathItem(PathItem pathItem, Schema<?> schema) {
         pathItem.readOperations().forEach(operation ->
                 operation.getResponses().forEach((status, response) -> {
                     if (status.startsWith("4") || status.startsWith("5")) {
-                        response.getContent().forEach((code, mediaType) -> mediaType.setSchema(schema));
+                        var content = response.getContent();
+                        if (content != null) {
+                            content.forEach((code, mediaType) -> mediaType.setSchema(schema));
+                        }
                     }
                 })
         );

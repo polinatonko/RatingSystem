@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * Utility class that provides helper methods for authentication.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthUtils {
     public static UserDetails getAuthenticatedUserDetails() {

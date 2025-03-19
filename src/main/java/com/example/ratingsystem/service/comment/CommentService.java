@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service that provides CRUD-operations for managing {@link Comment} objects.
+ */
 public interface CommentService {
     Comment create(Comment comment);
     Comment update(Comment comment);

@@ -11,6 +11,9 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
+/**
+ * Filter for handling exceptions that occur in filters.
+ */
 @Component
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver exceptionResolver;

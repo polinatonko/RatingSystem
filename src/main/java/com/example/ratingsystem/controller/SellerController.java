@@ -13,9 +13,11 @@ import com.example.ratingsystem.service.game.GameObjectService;
 import com.example.ratingsystem.service.request.SubmitRequestService;
 import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,10 +36,14 @@ public class SellerController {
     private final SubmitRequestService requestService;
     private final UserService userService;
     private final Mapper mapper;
-    private final static int DEFAULT_COUNT = 3;
+    private static final int DEFAULT_COUNT = 3;
 
     @PostMapping("/{id}/comments")
-    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Post comment to the seller")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Request was submitted", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable")
+    })
     public ResponseEntity<SubmitResponseDto> create(@PathVariable UUID id, @RequestBody @Validated CommentRequestDto dto) {
         dto.setSellerId(id);
         var request = requestService.createCommentRequest(mapper.toSubmitRequest(dto));
@@ -45,6 +51,11 @@ public class SellerController {
     }
 
     @GetMapping("/{id}/comments")
+    @Operation(summary = "Get all comments for the seller")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of seller's comments", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of path variable or request parameter")
+    })
     public ResponseEntity<PageResponseDto<CommentResponseDto>> getSellerComments(@PathVariable UUID id,
                                                                                  @RequestParam(required = false) @Min(1) Integer pageNo,
                                                                                  @RequestParam(required = false) @Min(1) Integer pageSize,
@@ -57,6 +68,11 @@ public class SellerController {
     }
 
     @GetMapping("/{id}/objects")
+    @Operation(summary = "Get all game objects for the seller")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of seller's game objects", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of path variable")
+    })
     public ResponseEntity<List<GameObjectResponseDto>> getGameObjects(@PathVariable UUID id) {
         var objects = gameObjectService.getByUserId(id)
                 .stream()
@@ -66,11 +82,19 @@ public class SellerController {
     }
 
     @GetMapping("/top")
+    @Operation(summary = "Get list of the top sellers")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of top seller's", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of request param")
+    })
     public ResponseEntity<List<UserResponseDto>> getTopSellers(
             @RequestParam(value = "count", required = false) Optional<Integer> countOpt
     ) {
         int count = Math.max(1, countOpt.orElse(DEFAULT_COUNT));
-        var sellers = userService.getTopSellers(count);
+        var sellers = userService.getTopSellers(count)
+                .stream()
+                .map(UserResponseDto::new)
+                .toList();
         return ResponseEntity.ok(sellers);
     }
 }

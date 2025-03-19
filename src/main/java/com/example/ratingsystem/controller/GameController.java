@@ -9,6 +9,7 @@ import com.example.ratingsystem.service.game.GameObjectService;
 import com.example.ratingsystem.service.game.GameService;
 import com.example.ratingsystem.exception.EntityNotFoundException;
 import com.example.ratingsystem.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -31,6 +32,7 @@ public class GameController {
     private final Mapper mapper;
 
     @PostMapping
+    @Operation(summary = "Create game")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Game was created", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Invalid body")
@@ -45,9 +47,10 @@ public class GameController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Partial update game")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Game was updated", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Invalid body or path parameter")
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable")
     })
     public ResponseEntity<GameResponseDto> update(@PathVariable UUID id, @RequestBody @Valid GameRequestDto dto) {
         dto.setId(id);
@@ -57,13 +60,16 @@ public class GameController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete game via id")
     public void delete(@PathVariable UUID id) {
         gameService.delete(id);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get game via id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Game was founded", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of path variable"),
             @ApiResponse(responseCode = "404", description = "Game wasn't found")
     })
     public ResponseEntity<GameResponseDto> get(@PathVariable UUID id) {
@@ -75,6 +81,7 @@ public class GameController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all games")
     @ApiResponse(responseCode = "200", description = "List of games", useReturnTypeSchema = true)
     public ResponseEntity<List<GameResponseDto>> getAll() {
         var games = gameService.getAll();
@@ -84,7 +91,11 @@ public class GameController {
     }
 
     @GetMapping("/{id}/objects")
-    @ApiResponse(responseCode = "200", description = "List of objects of game", useReturnTypeSchema = true)
+    @Operation(summary = "Get all objects of the game")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of objects of game", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid value of path variable")
+    })
     public ResponseEntity<List<GameObjectResponseDto>> getObjects(@PathVariable UUID id) {
         var objects = gameObjectService.getByGameId(id).stream().map(GameObjectResponseDto::new).toList();
         return ResponseEntity.ok(objects);

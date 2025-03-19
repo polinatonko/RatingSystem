@@ -6,6 +6,9 @@ import com.example.ratingsystem.domain.dtos.user.UserUpdateDto;
 import com.example.ratingsystem.domain.entities.User;
 import com.example.ratingsystem.service.user.UserService;
 import com.example.ratingsystem.util.Mapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,12 +27,21 @@ public class UserController {
     private final Mapper mapper;
 
     @GetMapping
+    @Operation(summary = "Get all users")
+    @ApiResponse(responseCode = "200", description = "List of users", useReturnTypeSchema = true)
     public ResponseEntity<List<UserResponseDto>> getAll() {
         var users = userService.getAll();
         return ResponseEntity.ok(users.stream().map(this::toDto).toList());
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Partial update of the user details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User was updated", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "403", description = "Lack of privileges"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public ResponseEntity<UserResponseDto> update(@PathVariable UUID id,
                                                   @RequestBody @NotNull UserUpdateDto dto) {
         dto.setId(id);
@@ -39,6 +51,12 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete user via id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User was deleted"),
+            @ApiResponse(responseCode = "400", description = "Invalid body or value of path variable"),
+            @ApiResponse(responseCode = "403", description = "Lack of privileges")
+    })
     public void delete(@PathVariable UUID id) {
         userService.delete(id);
     }
