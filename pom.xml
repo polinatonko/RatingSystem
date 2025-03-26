@@ -28,6 +28,7 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <io.jsonwebtoken.jjwt>0.12.1</io.jsonwebtoken.jjwt>
     </properties>
     <dependencies>
         <dependency>
@@ -76,18 +77,18 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.12.1</version>
+            <version>${io.jsonwebtoken.jjwt}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.12.1</version>
+            <version>${io.jsonwebtoken.jjwt}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.12.1</version>
+            <version>${io.jsonwebtoken.jjwt}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
